@@ -1,50 +1,201 @@
-# Welcome to your Expo app 👋
+# True Bond Mobile App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+TrueBond is a modern pre-marital counseling platform designed to help couples build a strong foundation for marriage. Through expert-guided counseling, interactive assessments, and relationship-building exercises, TrueBond provides personalized support to prepare couples for a lifelong journey together.
 
-## Get started
+## Tech Stack
 
-1. Install dependencies
+- Platform: Firebase (No Backend)
+- Frontend: React Native (Expo)
+- Database: Firestore (NoSQL)
+- Authentication: Firebase Authentication
+- Cloud Functions (Optional): For handling business logic
+- Storage: Firebase Storage
+- Hosting: Firebase Hosting (if needed for web interface)
+- Notifications: Firebase Cloud Messaging (FCM)
+- Payments: MoMo, Vietnam banking, Visa
 
-   ```bash
-   npm install
-   ```
+## Project Structure
 
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+true-bond-mobile-app/
+│── assets/                   # Images, icons, fonts, etc.
+│── src/
+│   ├── components/           # Reusable UI components
+│   ├── screens/              # Screen components (organized by feature)
+│   │   ├── Auth/             # Login, Register, etc.
+│   │   ├── Dashboard/        # Home, Profile, Settings, etc.
+│   │   ├── Counseling/       # Booking, Sessions, Assessments
+│   │   ├── Community/        # Forums, Group Chat
+│   │   ├── Learning/         # Courses, Exercises
+│   ├── navigation/           # Navigation logic (React Navigation)
+│   ├── context/              # Global state management (if needed)
+│   ├── hooks/                # Custom hooks for Firebase interactions
+│   ├── services/             # Firebase services (Auth, Firestore, Storage)
+│   ├── utils/                # Helper functions and utilities
+│   ├── config/               # Firebase configuration and environment variables
+│   ├── theme/                # Theming (colors, fonts, styles)
+│── .env                      # Environment variables (Firebase API keys, etc.)
+│── App.js                    # Entry point of the application
+│── package.json              # Dependencies and scripts
+│── firebase.json             # Firebase configuration (for hosting, if needed)
+│── README.md                 # Documentation
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Features
 
-## Learn more
+### Core Features
 
-To learn more about developing your project with Expo, look at the following resources:
+- Personalized Profiles: Individual and couple profiles with relationship milestones.
+- Counseling Sessions: Book one-on-one or group counseling with experts.
+- Relationship Assessments: Compatibility tests and progress tracking.
+- Learning Modules: Interactive courses and quizzes on communication, finances, and conflict resolution.
+- Guided Exercises: Daily or weekly relationship-building tasks.
+- Couple Goals: Shared goal tracking and milestone reminders.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Community and Support
 
-## Join the community
+- Group Counseling: Join sessions with other couples for shared learning.
+- Forums: Discuss relationship topics anonymously with expert moderation.
+- Expert Resources: Access blogs, articles, and expert relationship advice.
 
-Join our community of developers creating universal apps.
+### Mental & Emotional Well-being
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Mindfulness Tools: Guided meditations and stress management exercises.
+- Conflict Resolution: Structured templates for respectful disagreement resolution.
+
+### Interactive & Fun
+
+- Couple Quizzes: Learn more about each other through fun quizzes.
+- Chat Features: Private messages with appreciation prompts and a Gratitude Wall.
+- Games & Activities: Fun couple challenges and shared goal activities.
+
+### Administration & Insights
+
+- Counselor Dashboard: Manage clients, sessions, and notes.
+- Data-Driven Insights: Relationship analytics and progress tracking.
+- Payment Integration: Subscription-based or pay-per-session model.
+
+## Development
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- Node.js v22.14.0
+- PNPM
+
+The project uses several development tools:
+
+- **ESLint** for code linting
+- **Prettier** for code formatting
+- **TypeScript** for type checking
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/aquapaka/true-bond-mobile-app
+   cd true-bond-mobile-app
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+3. Start the development server:
+
+   ```bash
+   pnpm start
+   ```
+
+4. Run the app on a simulator or physical device.
+
+5. To maintain code quality, run:
+
+```bash
+# Linting
+pnpm run lint
+```
+
+### ESlint & Prettier
+
+- If using VSCode install them from:
+  - ESlint: <https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint>
+  - Prettier: <https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode>
+
+### API Documentation
+
+The backend API is documented using OpenAPI. Access the documentation at:
+
+<https://api.true-bond.com/docs> - Change this later
+
+## Building for Production
+
+To create a production build:
+
+```bash
+# Build for iOS
+expo build:ios
+
+# Build for Android
+expo build:android
+```
+
+## Contributing
+
+As this is a private repository, contributions are currently limited to the core team. If you are a team member and would like to contribute, please follow these steps:
+
+1. Switch to `dev` then create a new branch for your feature or bug fix:
+
+   ```shell
+   git checkout dev
+   git pull origin dev
+   git checkout -b feature-branch-name
+   ```
+
+2. Make your changes and commit them with a clear message:
+
+   ```shell
+   git commit -m "feat: Add XYZ feature"
+   ```
+
+3. Push your branch to the repository:
+
+   ```shell
+   git push origin feature-branch-name
+   ```
+
+4. Create a pull request (PR) and assign a reviewer.
+5. Once approved, your changes will be merged into the main branch.
+
+For any questions or access requests, contact the repository owner.
+
+### Commit Best Practices
+
+To maintain a clean and consistent commit history, follow these best practices:
+
+- Use Conventional Commits:
+
+  ```none
+  feat: Add new feature for period tracking
+  fix: Resolve issue with login authentication
+  chore: Update dependencies and configurations
+  refactor: Improve code structure for API calls
+  ```
+
+- Write clear and concise commit messages.
+  Group related changes into a single commit.
+- Use present tense and imperative mood in commit messages.
+- Avoid vague commit messages like "fix bug" or "update code."
+- Reference issues when applicable (e.g., `fix: Resolve login issue (#42)`).
+
+### Useful resources
+
+- <https://docs.expo.dev/guides/using-firebase/>
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
