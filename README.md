@@ -75,6 +75,29 @@ true-bond-mobile-app/
 - Data-Driven Insights: Relationship analytics and progress tracking.
 - Payment Integration: Subscription-based or pay-per-session model.
 
+## Roles and Screens
+
+### 👩‍❤️‍👨 Clients (Normal Users)
+
+1. 🏠 Home – Overview, relationship insights, upcoming sessions, recommended content.
+2. 📅 Sessions – View & book counseling sessions, Google Meet integration.
+3. 📖 Learn – Courses, quizzes, exercises, and relationship guides.
+4. 👤 Profile – User settings, subscription info, relationship tracking.
+
+### 🧑‍⚕️ Counselors (Therapists & Experts)
+
+1. 🏠 Home – Personalized dashboard with upcoming sessions & insights.
+2. 📅 Sessions – Manage scheduled counseling sessions, notes, and availability.
+3. 👥 Clients – View assigned clients, track progress, and manage appointments.
+4. 👤 Profile – Counselor’s personal settings, availability, and payment details.
+
+### 🛠️ Admins (Platform Managers)
+
+1. 📊 Dashboard – Overview of platform activity, active users, and analytics.
+2. 📂 Manage – View & organize sessions, user data, and general settings.
+3. ✅ Approvals – Review & approve new counselor applications.
+4. 👤 Profile – Admin account settings and access controls.
+
 ## Development
 
 ### Prerequisites
