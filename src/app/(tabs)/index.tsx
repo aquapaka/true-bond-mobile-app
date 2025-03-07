@@ -4,6 +4,7 @@ import { HelloWave } from "@/src/components/HelloWave";
 import ParallaxScrollView from "@/src/components/ParallaxScrollView";
 import { ThemedText } from "@/src/components/ThemedText";
 import { ThemedView } from "@/src/components/ThemedView";
+import { Button } from "react-native-paper";
 
 export default function HomeScreen() {
   return (
@@ -53,6 +54,7 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
+        <Button mode="contained">Hello</Button>
       </ThemedView>
     </ParallaxScrollView>
   );
