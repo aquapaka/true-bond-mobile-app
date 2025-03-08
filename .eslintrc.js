@@ -9,5 +9,6 @@ module.exports = {
         endOfLine: "auto",
       },
     ],
+    "comma-dangle": ["never"],
   },
 };

@@ -1,13 +1,37 @@
-import { Tabs } from "expo-router";
-import React, { useState } from "react";
+import { router, Tabs } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { HapticTab } from "@/src/components/HapticTab";
 import TabBarBackground from "@/src/components/ui/TabBarBackground";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { UserRole } from "@/src/types/Role";
+import { UserRole } from "@/src/types/User";
+import { auth } from "@/src/lib/firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TabLayout() {
   const [role, setRole] = useState<UserRole>("admin");
+  const [loading, setLoading] = useState(true);
+  const [firstTime, setFirstTime] = useState<boolean | null>(null); // used for onboarding showing
+
+  useEffect(() => {
+    const checkOnboardingAndAuth = async () => {
+      const seenOnboarding = await AsyncStorage.getItem("hasSeenOnboarding");
+      setFirstTime(seenOnboarding ? false : true);
+
+      auth.onAuthStateChanged((user) => {
+        if (!user) {
+          router.replace("/login");
+        } else {
+          router.replace("/");
+        }
+        setLoading(false);
+      });
+    };
+
+    checkOnboardingAndAuth();
+  });
+
+  if (loading) return null;
 
   return (
     <Tabs

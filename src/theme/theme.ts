@@ -1,4 +1,9 @@
-import { MD3DarkTheme, MD3LightTheme } from "react-native-paper";
+import { DarkTheme, DefaultTheme } from "@react-navigation/native";
+import {
+  adaptNavigationTheme,
+  MD3DarkTheme,
+  MD3LightTheme,
+} from "react-native-paper";
 
 const TruebondLightTheme = {
   colors: {
@@ -98,3 +103,14 @@ export const darkTheme = {
   ...MD3DarkTheme,
   ...TruebondDarkTheme,
 };
+
+// Adapt paper themes to react navigation themes
+export const {
+  DarkTheme: NavigationDarkTheme,
+  LightTheme: NavigationLightTheme,
+} = adaptNavigationTheme({
+  reactNavigationDark: DarkTheme,
+  reactNavigationLight: DefaultTheme,
+  materialDark: darkTheme,
+  materialLight: lightTheme,
+});
