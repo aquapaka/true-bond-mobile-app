@@ -94,7 +94,7 @@ true-bond-mobile-app/
 ### 🛠️ Admins (Platform Managers)
 
 1. 📊 Dashboard – Overview of platform activity, active users, and analytics.
-2. 📂 Manage – View & organize sessions, user data, and general settings.
+2. 📂 Management – View & organize sessions, user data, and general settings.
 3. ✅ Approvals – Review & approve new counselor applications.
 4. 👤 Profile – Admin account settings and access controls.
 

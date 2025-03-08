@@ -1,20 +1,17 @@
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import { Platform } from "react-native";
-
 import { HapticTab } from "@/src/components/HapticTab";
-import { IconSymbol } from "@/src/components/ui/IconSymbol";
 import TabBarBackground from "@/src/components/ui/TabBarBackground";
-import { Colors } from "@/src/constants/Colors";
-import { useColorScheme } from "@/src/hooks/useColorScheme";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import { UserRole } from "@/src/types/Role";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const [role, setRole] = useState<UserRole>("admin");
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
@@ -27,21 +24,99 @@ export default function TabLayout() {
         }),
       }}
     >
+      {/* Common Tabs for Clients & Counselors */}
       <Tabs.Screen
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="home" size={size} color={color} />
           ),
         }}
       />
+
+      {/* Cilent Tabs */}
       <Tabs.Screen
-        name="explore"
+        name="client-sessions"
         options={{
-          title: "Explore",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="paperplane.fill" color={color} />
+          title: "Sessions",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="calendar" size={size} color={color} />
+          ),
+          href: role === "client" ? "/client-sessions" : null,
+        }}
+      />
+      <Tabs.Screen
+        name="client-learn"
+        options={{
+          title: "Learn",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="book-open-page-variant" size={size} color={color} />
+          ),
+          href: role === "client" ? "/client-learn" : null,
+        }}
+      />
+
+      {/* Counselor tabs */}
+      <Tabs.Screen
+        name="counselor-sessions"
+        options={{
+          title: "Sessions",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="calendar" size={size} color={color} />
+          ),
+          href: role === "counselor" ? "/counselor-sessions" : null,
+        }}
+      />
+      <Tabs.Screen
+        name="counselor-clients"
+        options={{
+          title: "Clients",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="account-multiple" size={size} color={color} />
+          ),
+          href: role === "counselor" ? "/counselor-clients" : null,
+        }}
+      />
+
+      {/* Admin tabs */}
+      <Tabs.Screen
+        name="admin-dashboard"
+        options={{
+          title: "Dashboard",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="home-analytics" size={size} color={color} />
+          ),
+          href: role === "admin" ? "/admin-dashboard" : null,
+        }}
+      />
+      <Tabs.Screen
+        name="admin-management"
+        options={{
+          title: "Management",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="folder-cog" size={size} color={color} />
+          ),
+          href: role === "admin" ? "/admin-management" : null,
+        }}
+      />
+      <Tabs.Screen
+        name="admin-approvals"
+        options={{
+          title: "Approvals",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="account-multiple-check" size={size} color={color} />
+          ),
+          href: role === "admin" ? "/admin-approvals" : null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="account" size={size} color={color} />
           ),
         }}
       />
