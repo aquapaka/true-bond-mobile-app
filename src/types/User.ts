@@ -8,7 +8,7 @@ export type RelationshipStatus =
   | "It's Complicated"
   | "Prefer Not to Say";
 
-export interface User {
+export interface UserData {
   uid: string;
   name: string;
   email: string;

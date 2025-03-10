@@ -1,10 +1,10 @@
 import { useAuth } from "@/src/context/AuthProvider";
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity } from "react-native";
 
-import { Button } from "react-native-paper";
+import { Button, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function TabTwoScreen() {
+export default function ProfileScreen() {
   const { signOut } = useAuth();
 
   async function onLogoutPress() {
@@ -12,7 +12,10 @@ export default function TabTwoScreen() {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView
+      style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+    >
+      <Text>Profile Screen</Text>
       <TouchableOpacity onPress={() => onLogoutPress()}>
         <Button mode="contained">Log out</Button>
       </TouchableOpacity>

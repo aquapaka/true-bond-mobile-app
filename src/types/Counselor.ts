@@ -1,6 +1,6 @@
-import { User } from "./User";
+import { UserData } from "./User";
 
-export interface Counselor extends User {
+export interface Counselor extends UserData {
   role: "counselor"; // Fixed role
   bio: string; // Short introduction
   expertise: string[]; // Areas of expertise (e.g., ["communication", "finance"])

@@ -38,7 +38,7 @@ export default function LoginForm() {
       // Give React state time to update before navigation
       setTimeout(() => {
         router.replace("/(tabs)");
-      }, 200);
+      }, 300);
     } catch (error) {
       if (error instanceof Error)
         setError("password", { message: error.message });

@@ -1,22 +1,16 @@
-import TabBarBackground from "@/src/components/ui/TabBarBackground";
+import { HapticTab } from "@/src/components/HapticTab";
 import { useAuth } from "@/src/context/AuthProvider";
-import { UserRole } from "@/src/types/User";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { router, Tabs, usePathname } from "expo-router";
+import { router, Tabs } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Platform } from "react-native";
 
 export default function TabLayout() {
   const { user, loading, userData, signOut } = useAuth();
-  const [role, setRole] = useState<UserRole>("admin");
   const [firstTime, setFirstTime] = useState<boolean | null>(null); // used for onboarding showing
-  const pathname = usePathname();
-  const [trigger, setTrigger] = useState(0);
 
   useEffect(() => {
     console.log("🛠 TabLayout useAuth() Update → User:", user?.email);
-
-    setTrigger((prev) => prev + 1);
 
     if (!loading) {
       if (!user) {
@@ -27,13 +21,13 @@ export default function TabLayout() {
     }
   }, [user, loading]);
 
-  if (loading) return null;
+  if (loading || !user || !userData) return null;
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarBackground: TabBarBackground,
+        tabBarButton: HapticTab,
         tabBarStyle: Platform.select({
           ios: {
             // Use a transparent background on iOS to show the blur effect
@@ -62,7 +56,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="calendar" size={size} color={color} />
           ),
-          href: role === "client" ? "/client-sessions" : null,
+          href: userData.role === "client" ? "/client-sessions" : null,
         }}
       />
       <Tabs.Screen
@@ -72,7 +66,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="book-open-page-variant" size={size} color={color} />
           ),
-          href: role === "client" ? "/client-learn" : null,
+          href: userData.role === "client" ? "/client-learn" : null,
         }}
       />
 
@@ -84,7 +78,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="calendar" size={size} color={color} />
           ),
-          href: role === "counselor" ? "/counselor-sessions" : null,
+          href: userData.role === "counselor" ? "/counselor-sessions" : null,
         }}
       />
       <Tabs.Screen
@@ -94,7 +88,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="account-multiple" size={size} color={color} />
           ),
-          href: role === "counselor" ? "/counselor-clients" : null,
+          href: userData.role === "counselor" ? "/counselor-clients" : null,
         }}
       />
 
@@ -106,7 +100,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="home-analytics" size={size} color={color} />
           ),
-          href: role === "admin" ? "/admin-dashboard" : null,
+          href: userData.role === "admin" ? "/admin-dashboard" : null,
         }}
       />
       <Tabs.Screen
@@ -116,7 +110,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="folder-cog" size={size} color={color} />
           ),
-          href: role === "admin" ? "/admin-management" : null,
+          href: userData.role === "admin" ? "/admin-management" : null,
         }}
       />
       <Tabs.Screen
@@ -126,7 +120,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="account-multiple-check" size={size} color={color} />
           ),
-          href: role === "admin" ? "/admin-approvals" : null,
+          href: userData.role === "admin" ? "/admin-approvals" : null,
         }}
       />
 
