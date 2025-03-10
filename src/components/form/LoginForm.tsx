@@ -1,18 +1,27 @@
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
-import { Button, Text, TextInput } from "react-native-paper";
+import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type LoginFormData = {
   email: string;
   password: string;
 };
 
+const SignInSchema = z.object({
+  email: z.string().min(1, "Required."),
+  password: z.string().min(1, "Required."),
+});
+
 export default function LoginForm() {
+  const theme = useTheme();
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>({
+    resolver: zodResolver(SignInSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -24,9 +33,6 @@ export default function LoginForm() {
     <View style={{ gap: 12 }}>
       <Controller
         control={control}
-        rules={{
-          required: true,
-        }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             mode="outlined"
@@ -38,14 +44,14 @@ export default function LoginForm() {
         )}
         name="email"
       />
-      {errors.email && <Text>This is required.</Text>}
+      {errors.email && (
+        <Text style={{ color: theme.colors.error }}>
+          {errors.email.message}
+        </Text>
+      )}
 
       <Controller
         control={control}
-        rules={{
-          required: true,
-          minLength: 8,
-        }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             mode="outlined"
@@ -57,7 +63,11 @@ export default function LoginForm() {
         )}
         name="password"
       />
-      {errors.password && <Text>This is required.</Text>}
+      {errors.password && (
+        <Text style={{ color: theme.colors.error }}>
+          {errors.password.message}
+        </Text>
+      )}
 
       <Button mode="contained" onPress={handleSubmit(onSubmit)}>
         Login
