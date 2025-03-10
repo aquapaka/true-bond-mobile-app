@@ -1,8 +1,9 @@
+import { signIn } from "@/src/lib/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 type LoginFormData = {
   email: string;
@@ -19,7 +20,8 @@ export default function LoginForm() {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    setError,
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(SignInSchema),
     defaultValues: {
@@ -27,7 +29,15 @@ export default function LoginForm() {
       password: "",
     },
   });
-  const onSubmit = (data: LoginFormData) => console.log(data);
+
+  async function onSubmit(data: LoginFormData) {
+    try {
+      const userCredential = await signIn(data.email, data.password);
+    } catch (error) {
+      if (error instanceof Error)
+        setError("password", { message: error.message });
+    }
+  }
 
   return (
     <View style={{ gap: 12 }}>
@@ -69,7 +79,11 @@ export default function LoginForm() {
         </Text>
       )}
 
-      <Button mode="contained" onPress={handleSubmit(onSubmit)}>
+      <Button
+        disabled={isSubmitting}
+        mode="contained"
+        onPress={handleSubmit(onSubmit)}
+      >
         Login
       </Button>
     </View>

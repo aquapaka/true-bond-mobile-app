@@ -7,6 +7,7 @@ import {
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { UserRole } from "../types/User";
 import { database } from "./firebase"; // Ensure this points to your Firebase config
+import { FirebaseError } from "firebase/app";
 
 const auth = getAuth();
 
@@ -39,12 +40,29 @@ export async function signUp(email: string, password: string, role: UserRole) {
  * Signs in an existing user.
  */
 export async function signIn(email: string, password: string) {
-  const userCredential = await signInWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
-  return userCredential.user;
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    return userCredential.user;
+  } catch (error) {
+    // Handle Firebase Authentication errors
+    if (error instanceof FirebaseError) {
+      switch (error.code) {
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+        case "auth/invalid-email":
+          throw new Error("Your email or password is not correct.");
+        case "auth/user-disabled":
+          throw new Error("This account has been disabled.");
+        default:
+          throw new Error("Login failed. Please try again later.");
+      }
+    }
+    throw new Error("An unexpected error occurred.");
+  }
 }
 
 /**
