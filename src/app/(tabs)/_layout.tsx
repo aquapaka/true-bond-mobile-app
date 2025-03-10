@@ -1,35 +1,31 @@
-import { router, Tabs } from "expo-router";
+import TabBarBackground from "@/src/components/ui/TabBarBackground";
+import { useAuth } from "@/src/context/AuthProvider";
+import { UserRole } from "@/src/types/User";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import { router, Tabs, usePathname } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Platform } from "react-native";
-import { HapticTab } from "@/src/components/HapticTab";
-import TabBarBackground from "@/src/components/ui/TabBarBackground";
-import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { UserRole } from "@/src/types/User";
-import { auth } from "@/src/lib/firebase";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TabLayout() {
+  const { user, loading, userData, signOut } = useAuth();
   const [role, setRole] = useState<UserRole>("admin");
-  const [loading, setLoading] = useState(true);
   const [firstTime, setFirstTime] = useState<boolean | null>(null); // used for onboarding showing
+  const pathname = usePathname();
+  const [trigger, setTrigger] = useState(0);
 
   useEffect(() => {
-    const checkOnboardingAndAuth = async () => {
-      const seenOnboarding = await AsyncStorage.getItem("hasSeenOnboarding");
-      setFirstTime(seenOnboarding ? false : true);
+    console.log("🛠 TabLayout useAuth() Update → User:", user?.email);
 
-      auth.onAuthStateChanged((user) => {
-        if (!user) {
-          router.replace("/login");
-        } else {
-          router.replace("/");
-        }
-        setLoading(false);
-      });
-    };
+    setTrigger((prev) => prev + 1);
 
-    checkOnboardingAndAuth();
-  });
+    if (!loading) {
+      if (!user) {
+        router.replace("/(auth)/login");
+      } else {
+        router.replace("/(tabs)");
+      }
+    }
+  }, [user, loading]);
 
   if (loading) return null;
 
@@ -37,7 +33,6 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {

@@ -6,7 +6,6 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/src/hooks/useColorScheme";
 import { PaperProvider } from "react-native-paper";
 import {
   darkTheme,
@@ -14,6 +13,8 @@ import {
   NavigationDarkTheme,
   NavigationLightTheme,
 } from "../theme/theme";
+import { AuthProvider } from "../context/AuthProvider";
+import { useColorScheme } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -41,14 +42,20 @@ export default function RootLayout() {
   }
 
   return (
-    <PaperProvider theme={paperTheme}>
-      <ThemeProvider value={{ ...navigationTheme, fonts: DefaultTheme.fonts }}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </PaperProvider>
+    <AuthProvider>
+      <PaperProvider theme={paperTheme}>
+        <ThemeProvider
+          value={{ ...navigationTheme, fonts: DefaultTheme.fonts }}
+        >
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+            <Stack.Screen name="(auth)/login" />
+            <Stack.Screen name="(auth)/register" />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </PaperProvider>
+    </AuthProvider>
   );
 }

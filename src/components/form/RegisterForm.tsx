@@ -1,47 +1,54 @@
-import { signIn } from "@/src/lib/auth";
+import { signIn, signUp } from "@/src/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 import { z } from "zod";
 
-type LoginFormData = {
+type RegisterFormData = {
   email: string;
   password: string;
+  confirmPassword: string;
 };
 
-const SignInSchema = z.object({
-  email: z.string().min(1, "Required."),
-  password: z.string().min(1, "Required."),
-});
+const RegisterSchema = z
+  .object({
+    email: z.string().email({ message: "Invalid email address" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" })
+      .max(48, { message: "Password must be at most 48 characters" }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
-export default function LoginForm() {
+export default function RegisterForm() {
   const theme = useTheme();
   const {
     control,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(SignInSchema),
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: ""
     },
   });
 
-  async function onSubmit(data: LoginFormData) {
+  async function onSubmit(data: RegisterFormData) {
     try {
-      await signIn(data.email, data.password);
-
-      // Give React state time to update before navigation
-      setTimeout(() => {
-        router.replace("/(tabs)");
-      }, 200);
+      await signUp(data.email, data.password);
     } catch (error) {
       if (error instanceof Error)
-        setError("password", { message: error.message });
+        setError("confirmPassword", { message: error.message });
     }
   }
 
@@ -86,12 +93,32 @@ export default function LoginForm() {
         </Text>
       )}
 
+      <Controller
+        control={control}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            mode="outlined"
+            placeholder="Confirm your password"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            secureTextEntry={true}
+          />
+        )}
+        name="confirmPassword"
+      />
+      {errors.confirmPassword && (
+        <Text style={{ color: theme.colors.error }}>
+          {errors.confirmPassword.message}
+        </Text>
+      )}
+
       <Button
         disabled={isSubmitting}
         mode="contained"
         onPress={handleSubmit(onSubmit)}
       >
-        Login
+        Register
       </Button>
     </View>
   );
