@@ -1,5 +1,6 @@
 import { HapticTab } from "@/src/components/HapticTab";
 import { useAuth } from "@/src/context/AuthProvider";
+import { UserRole } from "@/src/types/User";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { router, Tabs } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -7,19 +8,33 @@ import { Platform } from "react-native";
 
 export default function TabLayout() {
   const { user, loading, userData, signOut } = useAuth();
+  const [isChecking, setIsChecking] = useState(true);
   const [firstTime, setFirstTime] = useState<boolean | null>(null); // used for onboarding showing
 
-  useEffect(() => {
-    console.log("🛠 TabLayout useAuth() Update → User:", user?.email);
+  // Change this while development to show tab based on role, will be replaced by user.role after;
+  const testRole: UserRole = "client";
 
-    if (!loading) {
-      if (!user) {
+  useEffect(() => {
+    console.log("🛠 TabLayout useAuth() Update → User:", user);
+
+    if (user === undefined) return; // Prevent early unnecessary execution
+
+    setIsChecking(true); // Start checking
+
+    if (!user) {
+      console.log("🚪 Redirecting to login...");
+      setTimeout(() => {
         router.replace("/(auth)/login");
-      } else {
+        setIsChecking(false);
+      }, 1);
+    } else {
+      console.log("🏠 Redirecting to home...");
+      setTimeout(() => {
         router.replace("/(tabs)");
-      }
+        setIsChecking(false);
+      }, 1);
     }
-  }, [user, loading]);
+  }, [user, router]);
 
   if (loading || !user || !userData) return null;
 
@@ -56,7 +71,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="calendar" size={size} color={color} />
           ),
-          href: userData.role === "client" ? "/client-sessions" : null,
+          href: testRole === "client" ? "/client-sessions" : null,
         }}
       />
       <Tabs.Screen
@@ -66,7 +81,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="book-open-page-variant" size={size} color={color} />
           ),
-          href: userData.role === "client" ? "/client-learn" : null,
+          href: testRole === "client" ? "/client-learn" : null,
         }}
       />
 
@@ -78,7 +93,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="calendar" size={size} color={color} />
           ),
-          href: userData.role === "counselor" ? "/counselor-sessions" : null,
+          href: testRole === "counselor" ? "/counselor-sessions" : null,
         }}
       />
       <Tabs.Screen
@@ -88,7 +103,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="account-multiple" size={size} color={color} />
           ),
-          href: userData.role === "counselor" ? "/counselor-clients" : null,
+          href: testRole === "counselor" ? "/counselor-clients" : null,
         }}
       />
 
@@ -100,7 +115,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="home-analytics" size={size} color={color} />
           ),
-          href: userData.role === "admin" ? "/admin-dashboard" : null,
+          href: testRole === "admin" ? "/admin-dashboard" : null,
         }}
       />
       <Tabs.Screen
@@ -110,7 +125,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="folder-cog" size={size} color={color} />
           ),
-          href: userData.role === "admin" ? "/admin-management" : null,
+          href: testRole === "admin" ? "/admin-management" : null,
         }}
       />
       <Tabs.Screen
@@ -120,7 +135,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="account-multiple-check" size={size} color={color} />
           ),
-          href: userData.role === "admin" ? "/admin-approvals" : null,
+          href: testRole === "admin" ? "/admin-approvals" : null,
         }}
       />
 
