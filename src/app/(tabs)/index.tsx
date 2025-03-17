@@ -4,9 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView
-      style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-    >
+    <SafeAreaView style={{ flex: 1 }}>
       <Text>Home Screen</Text>
       <LearningResourceForm />
     </SafeAreaView>

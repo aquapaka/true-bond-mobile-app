@@ -2,7 +2,13 @@ import { signIn, signUp } from "@/src/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
-import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import {
+  Button,
+  HelperText,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import { z } from "zod";
 
 type RegisterFormData = {
@@ -39,7 +45,7 @@ export default function RegisterForm() {
     defaultValues: {
       email: "",
       password: "",
-      confirmPassword: ""
+      confirmPassword: "",
     },
   });
 
@@ -67,11 +73,9 @@ export default function RegisterForm() {
         )}
         name="email"
       />
-      {errors.email && (
-        <Text style={{ color: theme.colors.error }}>
-          {errors.email.message}
-        </Text>
-      )}
+      <HelperText type="error" visible={!!errors.email}>
+        {errors.email?.message}
+      </HelperText>
 
       <Controller
         control={control}
@@ -87,11 +91,9 @@ export default function RegisterForm() {
         )}
         name="password"
       />
-      {errors.password && (
-        <Text style={{ color: theme.colors.error }}>
-          {errors.password.message}
-        </Text>
-      )}
+      <HelperText type="error" visible={!!errors.password}>
+        {errors.email?.message}
+      </HelperText>
 
       <Controller
         control={control}
@@ -107,11 +109,9 @@ export default function RegisterForm() {
         )}
         name="confirmPassword"
       />
-      {errors.confirmPassword && (
-        <Text style={{ color: theme.colors.error }}>
-          {errors.confirmPassword.message}
-        </Text>
-      )}
+      <HelperText type="error" visible={!!errors.confirmPassword}>
+        {errors.confirmPassword?.message}
+      </HelperText>
 
       <Button
         disabled={isSubmitting}

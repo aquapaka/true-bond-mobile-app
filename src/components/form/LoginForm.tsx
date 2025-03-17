@@ -3,7 +3,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
-import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import {
+  Button,
+  HelperText,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import { z } from "zod";
 
 type LoginFormData = {
@@ -12,8 +18,8 @@ type LoginFormData = {
 };
 
 const SignInSchema = z.object({
-  email: z.string().min(1, "Required."),
-  password: z.string().min(1, "Required."),
+  email: z.string().min(1, "Email is required."),
+  password: z.string().min(1, "Password is required."),
 });
 
 export default function LoginForm() {
@@ -52,7 +58,7 @@ export default function LoginForm() {
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             mode="outlined"
-            placeholder="Email"
+            label="Email"
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -60,18 +66,16 @@ export default function LoginForm() {
         )}
         name="email"
       />
-      {errors.email && (
-        <Text style={{ color: theme.colors.error }}>
-          {errors.email.message}
-        </Text>
-      )}
+      <HelperText type="error" visible={!!errors.email}>
+        {errors.email?.message}
+      </HelperText>
 
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
+            label="Password"
             mode="outlined"
-            placeholder="Password"
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -80,11 +84,9 @@ export default function LoginForm() {
         )}
         name="password"
       />
-      {errors.password && (
-        <Text style={{ color: theme.colors.error }}>
-          {errors.password.message}
-        </Text>
-      )}
+      <HelperText type="error" visible={!!errors.password}>
+        {errors.password?.message}
+      </HelperText>
 
       <Button
         disabled={isSubmitting}
