@@ -1,3 +1,4 @@
+import { CollectionName } from "../types/CollectionName";
 import { database } from "./firebase";
 import {
   doc,
@@ -11,11 +12,12 @@ import {
   where,
   getDocs,
   DocumentData,
+  serverTimestamp,
 } from "firebase/firestore";
 
 /** 🔹 Set or Update a document */
 export async function setDocument<T extends DocumentData>(
-  collectionName: string,
+  collectionName: CollectionName,
   id: string,
   data: T
 ) {
@@ -25,7 +27,7 @@ export async function setDocument<T extends DocumentData>(
 
 /** 🔹 Get a document */
 export async function getDocument<T>(
-  collectionName: string,
+  collectionName: CollectionName,
   id: string
 ): Promise<T | null> {
   const ref = doc(database, collectionName, id);
@@ -35,7 +37,7 @@ export async function getDocument<T>(
 
 /** 🔹 Update a document */
 export async function updateDocument<T>(
-  collectionName: string,
+  collectionName: CollectionName,
   id: string,
   data: Partial<T>
 ) {
@@ -44,19 +46,37 @@ export async function updateDocument<T>(
 }
 
 /** 🔹 Delete a document */
-export async function deleteDocument(collectionName: string, id: string) {
+export async function deleteDocument(
+  collectionName: CollectionName,
+  id: string
+) {
   const ref = doc(database, collectionName, id);
   return await deleteDoc(ref);
 }
 
 /** 🔹 Add a document (auto ID) */
-export async function addDocument<T extends DocumentData>(collectionName: string, data: T) {
+export async function addDocument<T extends DocumentData & { id: string }>(
+  collectionName: CollectionName,
+  data: Omit<T, "id" | "createdAt" | "updatedAt"> // Prevent manually setting the ID
+): Promise<T> {
   const ref = collection(database, collectionName);
-  return await addDoc(ref, data);
+  const docRef = await addDoc(ref, data); // Add document without `id`
+
+  // Update Firestore with the generated ID
+  await updateDoc(docRef, {
+    id: docRef.id,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+
+  // Return the data with the `id` included
+  return { ...data, id: docRef.id } as T;
 }
 
 /** 🔹 Get all documents from a collection */
-export async function getCollection<T>(collectionName: string): Promise<T[]> {
+export async function getCollection<T>(
+  collectionName: CollectionName
+): Promise<T[]> {
   const ref = collection(database, collectionName);
   const snapshot = await getDocs(ref);
   return snapshot.docs.map((doc) => doc.data() as T);
@@ -64,7 +84,7 @@ export async function getCollection<T>(collectionName: string): Promise<T[]> {
 
 /** 🔹 Query documents with filters */
 export async function queryCollection<T>(
-  collectionName: string,
+  collectionName: CollectionName,
   field: string,
   value: any
 ): Promise<T[]> {

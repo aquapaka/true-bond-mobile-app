@@ -1,7 +1,7 @@
 export type SessionStatus = "pending" | "confirmed" | "completed" | "canceled";
 
 export interface Session {
-  sessionId: string; // Auto-generated Firestore ID
+  id: string; // Auto-generated Firestore ID
   clientId: string; // Links to a client
   counselorId: string; // Links to a counselor
   meetLink: string; // Google Meet URL

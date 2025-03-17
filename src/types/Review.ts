@@ -1,5 +1,5 @@
 export interface Review {
-  reviewId: string; // Firestore Auto ID
+  id: string; // Firestore Auto ID
   sessionId: string; // Links to a completed session
   clientId: string; // Who wrote the review
   counselorId: string; // Who received the review

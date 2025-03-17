@@ -1,6 +1,5 @@
 import { useAuth } from "@/src/context/AuthProvider";
 import { TouchableOpacity } from "react-native";
-
 import { Button, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
