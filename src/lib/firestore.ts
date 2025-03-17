@@ -30,6 +30,8 @@ export async function getDocument<T>(
   collectionName: CollectionName,
   id: string
 ): Promise<T | null> {
+  console.log("Getting document from " + collectionName);
+
   const ref = doc(database, collectionName, id);
   const snapshot = await getDoc(ref);
   return snapshot.exists() ? (snapshot.data() as T) : null;
