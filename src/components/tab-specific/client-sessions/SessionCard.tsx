@@ -1,15 +1,14 @@
 import { getDocument } from "@/src/lib/firestore";
-import { Counselor } from "@/src/types/Counselor";
 import { Session } from "@/src/types/Session";
+import { UserData } from "@/src/types/User";
 import { formatDate } from "@/src/utils/formatUtils";
 import { showNotification } from "@/src/utils/notificationUtils";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Button, Surface, Text, useTheme } from "react-native-paper";
-import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function SessionCard({ session }: { session: Session }) {
-  const [counselor, setCounselor] = useState<Counselor | null>(null);
+  const [counselor, setCounselor] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
 
@@ -17,8 +16,8 @@ export default function SessionCard({ session }: { session: Session }) {
     const fetchCounselor = async () => {
       setLoading(true);
       try {
-        const counselor = await getDocument<Counselor>(
-          "counselors",
+        const counselor = await getDocument<UserData>(
+          "users",
           session.counselorId
         );
         setCounselor(counselor);

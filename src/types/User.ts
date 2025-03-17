@@ -13,14 +13,14 @@ export type RelationshipStatus =
   | "Prefer Not to Say";
 
 export interface UserData {
-  uid: string;
+  id: string;
   name: string;
   email: string;
   role: UserRole;
   profileImage: string;
   phone: string;
   relationshipStatus: RelationshipStatus;
-  counselorId?: string;
+  counselorProfileId?: string;
   dateOfBirth?: Date;
   gender?: UserGender;
   notificationsEnabled?: boolean; // User's notification preferences
