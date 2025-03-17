@@ -8,8 +8,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FirebaseError } from "firebase/app";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
-import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
+import {
+  Button,
+  HelperText,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import { z } from "zod";
+import ImageUploader from "./custom/ImageUploader";
 
 const categories: LearningResourceCategory[] = [
   "communication",
@@ -36,12 +43,19 @@ const LearningResourceSchema = z.object({
   ),
 });
 
+const defaultValues: LearningResourceFormData = {
+  title: "",
+  content: "",
+  imageUrl: "",
+  author: "",
+  authorImageUrl: "",
+  category: "communication", // Default category
+};
+
 export function LearningResourceForm({
   isEditing = false,
-  defaultValues,
 }: {
   isEditing?: boolean;
-  defaultValues?: LearningResourceFormData;
 }) {
   const theme = useTheme();
   const {
@@ -51,7 +65,7 @@ export function LearningResourceForm({
     reset,
   } = useForm<LearningResourceFormData>({
     resolver: zodResolver(LearningResourceSchema),
-    defaultValues,
+    defaultValues: defaultValues,
   });
 
   async function onSubmit(data: LearningResourceFormData) {
@@ -130,17 +144,12 @@ export function LearningResourceForm({
         {errors.category?.message}
       </HelperText>
 
+      <Text variant="labelLarge">Image</Text>
       <Controller
         control={control}
         name="imageUrl"
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            mode="outlined"
-            label="ImageUrl"
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-          />
+          <ImageUploader value={value} onChange={onChange} onBlur={onBlur} />
         )}
       />
       <HelperText type="error" visible={!!errors.imageUrl}>
@@ -164,17 +173,12 @@ export function LearningResourceForm({
         {errors.author?.message}
       </HelperText>
 
+      <Text variant="labelLarge">Author Image</Text>
       <Controller
         control={control}
         name="authorImageUrl"
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            mode="outlined"
-            label="authorImageUrl"
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-          />
+          <ImageUploader value={value} onChange={onChange} onBlur={onBlur} />
         )}
       />
       <HelperText type="error" visible={!!errors.authorImageUrl}>
@@ -186,7 +190,7 @@ export function LearningResourceForm({
       </Button>
 
       <Button
-        mode="contained"
+        mode="contained-tonal"
         onPress={() => {
           showNotification("success", "Demo", "This is demo description");
         }}

@@ -7,7 +7,9 @@ export default function HomeScreen() {
   return (
     <ScrollView>
       <SafeAreaView style={{ flex: 1, paddingBottom: 64, padding: 16 }}>
-        <Text>Home Screen</Text>
+        <Text variant="headlineMedium" style={{ marginBottom: 16 }}>
+          Home Screen
+        </Text>
         <LearningResourceForm />
       </SafeAreaView>
     </ScrollView>
