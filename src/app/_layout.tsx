@@ -20,6 +20,8 @@ import {
   useColorScheme,
   View,
 } from "react-native";
+import { NotifierWrapper } from "react-native-notifier";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -52,17 +54,24 @@ export default function RootLayout() {
         <ThemeProvider
           value={{ ...navigationTheme, fonts: DefaultTheme.fonts }}
         >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={{ flex: 1 }}>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="+not-found" />
-                <Stack.Screen name="(auth)/login" />
-                <Stack.Screen name="(auth)/register" />
-              </Stack>
-              <StatusBar style="auto" />
-            </View>
-          </TouchableWithoutFeedback>
+          <GestureHandlerRootView>
+            <NotifierWrapper>
+              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={{ flex: 1 }}>
+                  <Stack>
+                    <Stack.Screen
+                      name="(tabs)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen name="+not-found" />
+                    <Stack.Screen name="(auth)/login" />
+                    <Stack.Screen name="(auth)/register" />
+                  </Stack>
+                  <StatusBar style="auto" />
+                </View>
+              </TouchableWithoutFeedback>
+            </NotifierWrapper>
+          </GestureHandlerRootView>
         </ThemeProvider>
       </PaperProvider>
     </AuthProvider>

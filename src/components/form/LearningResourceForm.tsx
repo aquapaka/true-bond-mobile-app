@@ -3,12 +3,12 @@ import {
   LearningResource,
   LearningResourceCategory,
 } from "@/src/types/LearningResource";
+import { showNotification } from "@/src/utils/notificationUtils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { router } from "expo-router";
-import { serverTimestamp } from "firebase/firestore";
+import { FirebaseError } from "firebase/app";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
-import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
 import { z } from "zod";
 
 const categories: LearningResourceCategory[] = [
@@ -17,7 +17,10 @@ const categories: LearningResourceCategory[] = [
   "conflict_resolution",
 ];
 
-type LearningResourceFormData = Omit<LearningResource, "id" | "createdAt" | "updatedAt">;
+type LearningResourceFormData = Omit<
+  LearningResource,
+  "id" | "createdAt" | "updatedAt"
+>;
 
 const LearningResourceSchema = z.object({
   title: z.string().min(1, "Title is required."),
@@ -45,6 +48,7 @@ export function LearningResourceForm({
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm<LearningResourceFormData>({
     resolver: zodResolver(LearningResourceSchema),
     defaultValues,
@@ -54,11 +58,22 @@ export function LearningResourceForm({
     try {
       if (isEditing) {
       } else {
-        await addDocument<LearningResource>("learningresources", data);
+        const addedLearningResource = await addDocument<LearningResource>(
+          "learningresources",
+          data
+        );
+        // Reset form after successful
+        if (addedLearningResource) {
+          reset();
+          showNotification(
+            "success",
+            "Successfully added!",
+            "Learning Resource has been added"
+          );
+        }
       }
-      router.back(); // Navigate back after submission
     } catch (error) {
-      console.error("Error saving resource:", error);
+      showNotification("error", "Error!", String(error));
     }
   }
 
@@ -67,44 +82,116 @@ export function LearningResourceForm({
       <Controller
         control={control}
         name="title"
-        render={({ field }) => (
-          <TextInput mode="outlined" placeholder="Title" {...field} />
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            mode="outlined"
+            label="Title"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
         )}
       />
-      {errors.title && (
-        <Text style={{ color: theme.colors.error }}>
-          {errors.title.message}
-        </Text>
-      )}
+      <HelperText type="error" visible={!!errors.title}>
+        {errors.title?.message}
+      </HelperText>
 
       <Controller
         control={control}
         name="content"
-        render={({ field }) => (
-          <TextInput mode="outlined" placeholder="Content" {...field} />
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            mode="outlined"
+            label="Content"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
         )}
       />
-      {errors.content && (
-        <Text style={{ color: theme.colors.error }}>
-          {errors.content.message}
-        </Text>
-      )}
+      <HelperText type="error" visible={!!errors.content}>
+        {errors.content?.message}
+      </HelperText>
 
       <Controller
         control={control}
         name="category"
-        render={({ field }) => (
-          <TextInput mode="outlined" placeholder="Category" {...field} />
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            mode="outlined"
+            label="Category"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
         )}
       />
-      {errors.category && (
-        <Text style={{ color: theme.colors.error }}>
-          {errors.category.message}
-        </Text>
-      )}
+      <HelperText type="error" visible={!!errors.category}>
+        {errors.category?.message}
+      </HelperText>
+
+      <Controller
+        control={control}
+        name="imageUrl"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            mode="outlined"
+            label="ImageUrl"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+      />
+      <HelperText type="error" visible={!!errors.imageUrl}>
+        {errors.imageUrl?.message}
+      </HelperText>
+
+      <Controller
+        control={control}
+        name="author"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            mode="outlined"
+            label="author"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+      />
+      <HelperText type="error" visible={!!errors.author}>
+        {errors.author?.message}
+      </HelperText>
+
+      <Controller
+        control={control}
+        name="authorImageUrl"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            mode="outlined"
+            label="authorImageUrl"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+      />
+      <HelperText type="error" visible={!!errors.authorImageUrl}>
+        {errors.authorImageUrl?.message}
+      </HelperText>
 
       <Button mode="contained" onPress={handleSubmit(onSubmit)}>
         {isEditing ? "Update Resource" : "Create Resource"}
+      </Button>
+
+      <Button
+        mode="contained"
+        onPress={() => {
+          showNotification("success", "Demo", "This is demo description");
+        }}
+      >
+        {"Demo Notification"}
       </Button>
     </View>
   );

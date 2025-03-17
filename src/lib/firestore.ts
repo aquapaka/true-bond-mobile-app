@@ -62,6 +62,8 @@ export async function addDocument<T extends DocumentData & { id: string }>(
   const ref = collection(database, collectionName);
   const docRef = await addDoc(ref, data); // Add document without `id`
 
+  console.log("Adding document to " + collectionName);
+
   // Update Firestore with the generated ID
   await updateDoc(docRef, {
     id: docRef.id,
