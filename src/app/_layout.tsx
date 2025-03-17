@@ -14,7 +14,12 @@ import {
   NavigationLightTheme,
 } from "../theme/theme";
 import { AuthProvider } from "../context/AuthProvider";
-import { useColorScheme } from "react-native";
+import {
+  Keyboard,
+  TouchableWithoutFeedback,
+  useColorScheme,
+  View,
+} from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -47,13 +52,17 @@ export default function RootLayout() {
         <ThemeProvider
           value={{ ...navigationTheme, fonts: DefaultTheme.fonts }}
         >
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-            <Stack.Screen name="(auth)/login" />
-            <Stack.Screen name="(auth)/register" />
-          </Stack>
-          <StatusBar style="auto" />
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={{ flex: 1 }}>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+                <Stack.Screen name="(auth)/login" />
+                <Stack.Screen name="(auth)/register" />
+              </Stack>
+              <StatusBar style="auto" />
+            </View>
+          </TouchableWithoutFeedback>
         </ThemeProvider>
       </PaperProvider>
     </AuthProvider>
