@@ -29,7 +29,7 @@ export default function ClientSessionsScreen() {
         >
           <Text variant="titleSmall">Upcoming sessions</Text>
           {sessions.map((session) => (
-            <SessionCard session={session} />
+            <SessionCard key={session.id} session={session} />
           ))}
         </Surface>
         <Button mode="contained" onPress={() => null}>

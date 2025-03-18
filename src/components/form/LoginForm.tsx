@@ -52,7 +52,7 @@ export default function LoginForm() {
   }
 
   return (
-    <View style={{ gap: 12 }}>
+    <View>
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (

@@ -92,7 +92,7 @@ export function LearningResourceForm({
   }
 
   return (
-    <View style={{ gap: 12 }}>
+    <View>
       <Controller
         control={control}
         name="title"

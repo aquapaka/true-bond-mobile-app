@@ -1,11 +1,20 @@
-import React from "react";
-import { View, ScrollView } from "react-native";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TextInput, Button, HelperText, Checkbox } from "react-native-paper";
-import * as z from "zod";
+import React, { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { View } from "react-native";
+import { Button, Chip, HelperText, Text, TextInput } from "react-native-paper";
+import { z } from "zod";
+import ImageUploader from "./custom/ImageUploader";
+import { showNotification } from "@/src/utils/notificationUtils";
+import { addDocument } from "@/src/lib/firestore";
+import {
+  BookingSlot,
+  CounselorProfile,
+  TimeSlot,
+  Weekday,
+} from "@/src/types/CounselorProfile";
 
-const daysOfWeek = [
+const weekdays: Weekday[] = [
   "Monday",
   "Tuesday",
   "Wednesday",
@@ -14,72 +23,133 @@ const daysOfWeek = [
   "Saturday",
   "Sunday",
 ];
+const timeSlots: TimeSlot[] = [
+  "06:00",
+  "07:00",
+  "08:00",
+  "09:00",
+  "10:00",
+  "11:00",
+  "12:00",
+  "13:00",
+  "14:00",
+  "15:00",
+  "16:00",
+  "17:00",
+  "18:00",
+  "19:00",
+  "20:00",
+];
 
 const CounselorProfileSchema = z.object({
   bio: z.string().min(10, "Bio must be at least 10 characters."),
   expertise: z.string().min(3, "Expertise is required."),
-  experienceYears: z
+  experienceYears: z.coerce
     .number()
-    .min(1, "At least 1 year of experience is required.")
-    .max(50, "Experience cannot exceed 50 years."),
-  certificateImageUrl: z.string().url("Invalid certificate image URL."),
-  sessionPrice: z.number().min(0, "Price must be at least 0."),
-  availability: z
-    .array(
-      z.object({
-        day: z.string(),
-        slots: z.array(z.string().min(1, "Time slot is required.")),
-      })
-    )
-    .nonempty("At least one available day is required."),
-  approved: z.boolean(),
+    .min(1, "Must have at least 1 year of experience."),
+  sessionPrice: z.coerce.number().min(0, "Price must be a positive number."),
+  certificateImageUrl: z.string().min(1, "Certificate is required."),
+  availability: z.array(
+    z.object({
+      day: z.string(),
+      slots: z
+        .array(z.string())
+        .min(1, "At least one time slot must be selected."),
+    })
+  ),
 });
 
-type CounselorProfileFormData = z.infer<typeof CounselorProfileSchema>;
+export type CounselorProfileFormData = Omit<
+  z.infer<typeof CounselorProfileSchema>,
+  "id" | "createdAt" | "updatedAt"
+>;
 
-export default function CounselorProfileForm({
-  onSubmit,
-  defaultValues,
-}: {
-  onSubmit: (data: CounselorProfileFormData) => void;
-  defaultValues?: Partial<CounselorProfileFormData>;
-}) {
+const CounselorProfileForm = () => {
   const {
     control,
     handleSubmit,
-    setValue,
-    formState: { errors },
+    reset,
+    formState: { errors, isSubmitting },
   } = useForm<CounselorProfileFormData>({
     resolver: zodResolver(CounselorProfileSchema),
     defaultValues: {
       bio: "",
       expertise: "",
       experienceYears: 1,
+      sessionPrice: 2,
       certificateImageUrl: "",
-      sessionPrice: 0,
       availability: [],
-      approved: false,
-      ...defaultValues,
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "availability",
-  });
+  const [selectedDays, setSelectedDays] = useState<Record<string, string[]>>(
+    {}
+  );
+
+  const toggleDay = (day: string) => {
+    setSelectedDays((prev) => {
+      const updated = { ...prev };
+      if (updated[day]) {
+        delete updated[day]; // Deselect day
+      } else {
+        updated[day] = []; // Enable day with empty slots
+      }
+      return updated;
+    });
+  };
+
+  const toggleTimeSlot = (day: string, slot: string) => {
+    setSelectedDays((prev) => {
+      const updated = { ...prev };
+      if (!updated[day]) return updated;
+      if (updated[day].includes(slot)) {
+        updated[day] = updated[day].filter((s) => s !== slot);
+      } else {
+        updated[day] = [...updated[day], slot];
+      }
+      return updated;
+    });
+  };
+
+  async function onSubmit(data: CounselorProfileFormData) {
+    try {
+      const addedProfile = await addDocument<CounselorProfile>(
+        "counselorProfiles",
+        {
+          ...data,
+          availability: data.availability as BookingSlot[],
+          rating: 5,
+          status: "applying",
+        }
+      );
+
+      // Reset form after successful
+      if (addedProfile) {
+        reset();
+        showNotification(
+          "success",
+          "Your information has been sent!",
+          "It will be process within 2 days"
+        );
+      }
+    } catch (error) {
+      showNotification("error", "Error!", String(error));
+    }
+  }
 
   return (
-    <ScrollView style={{ padding: 16 }}>
+    <View>
+      {/* Bio */}
       <Controller
         control={control}
         name="bio"
         render={({ field }) => (
           <TextInput
             label="Bio"
-            value={field.value}
+            mode="outlined"
+            placeholder="Enter your bio..."
             onChangeText={field.onChange}
-            onBlur={field.onBlur}
-            error={!!errors.bio}
+            value={field.value}
           />
         )}
       />
@@ -87,16 +157,17 @@ export default function CounselorProfileForm({
         {errors.bio?.message}
       </HelperText>
 
+      {/* Expertise */}
       <Controller
         control={control}
         name="expertise"
         render={({ field }) => (
           <TextInput
             label="Expertise"
-            value={field.value}
+            mode="outlined"
+            placeholder="communication, financial... "
             onChangeText={field.onChange}
-            onBlur={field.onBlur}
-            error={!!errors.expertise}
+            value={field.value}
           />
         )}
       />
@@ -104,17 +175,17 @@ export default function CounselorProfileForm({
         {errors.expertise?.message}
       </HelperText>
 
+      {/* Experience Years */}
       <Controller
         control={control}
         name="experienceYears"
         render={({ field }) => (
           <TextInput
-            label="Years of Experience"
-            value={String(field.value)}
+            label="Experience (Years)"
+            mode="outlined"
             keyboardType="numeric"
-            onChangeText={(value) => field.onChange(Number(value))}
-            onBlur={field.onBlur}
-            error={!!errors.experienceYears}
+            onChangeText={(text) => field.onChange(Number(text))}
+            value={String(field.value)}
           />
         )}
       />
@@ -122,34 +193,17 @@ export default function CounselorProfileForm({
         {errors.experienceYears?.message}
       </HelperText>
 
-      <Controller
-        control={control}
-        name="certificateImageUrl"
-        render={({ field }) => (
-          <TextInput
-            label="Certificate Image URL"
-            value={field.value}
-            onChangeText={field.onChange}
-            onBlur={field.onBlur}
-            error={!!errors.certificateImageUrl}
-          />
-        )}
-      />
-      <HelperText type="error" visible={!!errors.certificateImageUrl}>
-        {errors.certificateImageUrl?.message}
-      </HelperText>
-
+      {/* Session Price */}
       <Controller
         control={control}
         name="sessionPrice"
         render={({ field }) => (
           <TextInput
-            label="Session Price"
-            value={String(field.value)}
+            label="Session Price ($)"
+            mode="outlined"
             keyboardType="numeric"
-            onChangeText={(value) => field.onChange(Number(value))}
-            onBlur={field.onBlur}
-            error={!!errors.sessionPrice}
+            onChangeText={(text) => field.onChange(Number(text))}
+            value={String(field.value)}
           />
         )}
       />
@@ -157,50 +211,90 @@ export default function CounselorProfileForm({
         {errors.sessionPrice?.message}
       </HelperText>
 
-      {/* Availability Selection */}
-      <View>
-        {fields.map((field, index) => (
-          <View key={field.id}>
-            <TextInput label="Day" value={field.day} disabled />
-            <TextInput
-              label="Time Slots (comma separated)"
-              onChangeText={(value) =>
-                setValue(
-                  `availability.${index}.slots`,
-                  value.split(",").map((slot) => slot.trim())
-                )
-              }
-            />
-            <Button onPress={() => remove(index)}>Remove</Button>
-          </View>
-        ))}
-        <Button
-          onPress={() =>
-            append({
-              day: daysOfWeek[fields.length % 7],
-              slots: [],
-            })
-          }
-        >
-          Add Availability
-        </Button>
-      </View>
-
+      {/* Certificate Image */}
+      <Text
+        variant="labelMedium"
+        style={{ fontWeight: "bold", marginBottom: 12 }}
+      >
+        Certificate Image
+      </Text>
       <Controller
         control={control}
-        name="approved"
+        name="certificateImageUrl"
         render={({ field }) => (
-          <Checkbox.Item
-            label="Approved"
-            status={field.value ? "checked" : "unchecked"}
-            onPress={() => field.onChange(!field.value)}
+          <ImageUploader
+            value={field.value}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
           />
         )}
       />
+      <HelperText type="error" visible={!!errors.certificateImageUrl}>
+        {errors.certificateImageUrl?.message}
+      </HelperText>
 
-      <Button mode="contained" onPress={handleSubmit(onSubmit)}>
-        Submit
+      {/* Availability Selector */}
+      <Text
+        variant="labelMedium"
+        style={{ fontWeight: "bold", marginBottom: 12 }}
+      >
+        Availability
+      </Text>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+        {weekdays.map((day) => (
+          <Chip
+            key={day}
+            selected={!!selectedDays[day]}
+            onPress={() => toggleDay(day)}
+            compact
+          >
+            {day}
+          </Chip>
+        ))}
+      </View>
+
+      {Object.keys(selectedDays).map((day) => (
+        <View key={day} style={{ marginTop: 10 }}>
+          <Text
+            variant="labelSmall"
+            style={{ fontWeight: "bold", marginBottom: 12 }}
+          >
+            {day} - Select Time Slots
+          </Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+            {timeSlots.map((slot) => (
+              <Chip
+                key={`${day}-${slot}`}
+                selected={selectedDays[day]?.includes(slot)}
+                onPress={() => toggleTimeSlot(day, slot)}
+                compact
+              >
+                {slot}
+              </Chip>
+            ))}
+          </View>
+        </View>
+      ))}
+
+      {/* Submit */}
+      <Button
+        mode="contained"
+        onPress={handleSubmit((data) =>
+          onSubmit({
+            ...data,
+            availability: Object.entries(selectedDays).map(([day, slots]) => ({
+              day,
+              slots,
+            })),
+          })
+        )}
+        disabled={isSubmitting}
+        style={{ marginTop: 20 }}
+      >
+        Apply using this Profile
       </Button>
-    </ScrollView>
+    </View>
   );
-}
+};
+
+export default CounselorProfileForm;
