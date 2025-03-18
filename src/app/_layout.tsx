@@ -16,6 +16,7 @@ import {
 import { AuthProvider } from "../context/AuthProvider";
 import {
   Keyboard,
+  Platform,
   TouchableWithoutFeedback,
   useColorScheme,
   View,
@@ -56,7 +57,9 @@ export default function RootLayout() {
         >
           <GestureHandlerRootView>
             <NotifierWrapper>
-              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <TouchableWithoutFeedback
+                onPress={Platform.OS === "web" ? undefined : Keyboard.dismiss}
+              >
                 <View style={{ flex: 1 }}>
                   <Stack>
                     <Stack.Screen
