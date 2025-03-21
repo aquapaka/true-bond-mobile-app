@@ -13,6 +13,8 @@ import {
   TimeSlot,
   Weekday,
 } from "@/src/types/CounselorProfile";
+import { useAuth } from "@/src/context/AuthProvider";
+import { router } from "expo-router";
 
 const weekdays: Weekday[] = [
   "Monday",
@@ -81,6 +83,7 @@ const CounselorProfileForm = () => {
       availability: [],
     },
   });
+  const { userData } = useAuth();
 
   const [selectedDays, setSelectedDays] = useState<Record<string, string[]>>(
     {}
@@ -112,11 +115,17 @@ const CounselorProfileForm = () => {
   };
 
   async function onSubmit(data: CounselorProfileFormData) {
+    if (!userData) {
+      showNotification("error", "Error!", "Userdata have not loaded");
+      return;
+    }
+
     try {
       const addedProfile = await addDocument<CounselorProfile>(
         "counselorProfiles",
         {
           ...data,
+          userId: userData.id,
           availability: data.availability as BookingSlot[],
           rating: 5,
           status: "applying",
@@ -131,6 +140,7 @@ const CounselorProfileForm = () => {
           "Your information has been sent!",
           "It will be process within 2 days"
         );
+        router.back();
       }
     } catch (error) {
       showNotification("error", "Error!", String(error));

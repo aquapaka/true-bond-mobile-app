@@ -47,6 +47,7 @@ export type CounselorStatus =
 
 export interface CounselorProfile {
   id: string;
+  userId: string;
   bio: string; // Short introduction
   expertise: string; // Areas of expertise (e.g., ["communication", "finance"])
   experienceYears: number;
