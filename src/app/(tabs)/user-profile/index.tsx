@@ -5,7 +5,7 @@ import { Link } from "expo-router";
 import { useAuth } from "@/src/context/AuthProvider";
 
 export default function ProfileScreen() {
-  const { signOut, user } = useAuth(); 
+  const { signOut, userData } = useAuth();
 
   async function onLogoutPress() {
     await signOut();
@@ -17,13 +17,13 @@ export default function ProfileScreen() {
       <View style={styles.profileHeader}>
         <Avatar.Image
           size={120}
-          source={{ uri: user?.profileImage || "" }}
+          source={{ uri: userData?.profileImage || "" }}
         />
         <Text variant="titleLarge" style={styles.userName}>
-          {user?.name || "User Name"}
+          {userData?.name || "User Name"}
         </Text>
         <Text variant="bodyMedium" style={styles.userHandle}>
-          {user?.email ? user.email: "username"}
+          {userData?.email ? userData.email : "username"}
         </Text>
         <Link href={"/(tabs)/user-profile/edit-profile"} asChild>
           <Button mode="contained" onPress={() => null}>
@@ -67,7 +67,6 @@ export default function ProfileScreen() {
         </Button>
       </Link>
     </SafeAreaView>
-
   );
 }
 

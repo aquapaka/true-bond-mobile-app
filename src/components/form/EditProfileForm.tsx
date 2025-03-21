@@ -1,43 +1,50 @@
-import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
-import { Button, HelperText, Text, TextInput } from "react-native-paper";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useAuth } from "@/src/context/AuthProvider";
-import { updateDocument } from "@/src/lib/firestore"; 
-import ImageUploader from "./custom/ImageUploader";
+import { updateDocument } from "@/src/lib/firestore";
+import { UserData } from "@/src/types/User";
 import { showNotification } from "@/src/utils/notificationUtils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { StyleSheet, View } from "react-native";
+import { Button, HelperText, Text, TextInput } from "react-native-paper";
+import { z } from "zod";
+import ImageUploader from "./custom/ImageUploader";
 
 // Validation schema for user profile
+// TODO: Validate those data properly
 const ProfileSchema = z.object({
-  name: z.string().min(1, "Username is required."), 
-  email: z.string().email("Invalid email address."), 
-  profileImage: z.string().optional(), 
+  name: z.string().min(1, "Username is required."),
+  email: z.string(),
+  profileImage: z.string(),
+  phone: z.string(),
+  relationshipStatus: z.enum([
+    "Single",
+    "In a Relationship",
+    "Engaged",
+    "Married",
+    "It's Complicated",
+    "Prefer Not to Say",
+  ]),
+  dateOfBirth: z.date(),
+  gender: z.enum(["Male", "Female", "Other"]),
 });
 
-const defaultValues = {
-  name: "",
-  email: "", 
-  profileImage: "", 
-};
+type ProfileFormData = Omit<
+  z.infer<typeof ProfileSchema>,
+  "id" | "createdAt" | "updatedAt" | "role" | "counselorProfileId"
+>;
 
+// TODO: Add missing input fields
 export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const [loading, setLoading] = useState(false);
-
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm({
+  } = useForm<ProfileFormData>({
     resolver: zodResolver(ProfileSchema),
-    defaultValues: {
-      name: user?.name || "", 
-      email: user?.email || "", 
-      profileImage: user?.profileImage || "", 
-    },
   });
 
   // Handle form submission
@@ -46,25 +53,66 @@ export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
       setLoading(true);
 
       const updatedProfile = {
-        ...data, 
-        updatedAt: new Date(), 
+        ...data,
+        updatedAt: new Date(),
       };
 
-      await updateDocument("users", user?.uid ?? "", updatedProfile);
+      await updateDocument<UserData>(
+        "users",
+        userData?.id ?? "",
+        updatedProfile
+      );
 
       // Reset form after successful update
       reset();
       setLoading(false);
-      showNotification("success", "Profile updated", "Your profile has been successfully updated.");
+      showNotification(
+        "success",
+        "Profile updated",
+        "Your profile has been successfully updated."
+      );
     } catch (error) {
       setLoading(false);
       showNotification("error", "Update failed", String(error));
     }
   };
 
+  useEffect(() => {
+    if (userData) {
+      reset({
+        name: userData.name || "No name",
+        email: userData.email || "example@gmail.com",
+        profileImage: userData.profileImage || "",
+        dateOfBirth: userData.dateOfBirth || new Date(),
+        gender: userData.gender || "Other",
+        phone: userData.phone || "",
+        relationshipStatus: userData.relationshipStatus || "Prefer Not to Say",
+      });
+    }
+  }, [userData, user, reset]);
+
   return (
     <View style={styles.container}>
-      <Text variant="titleLarge">Edit Profile</Text>
+      <Text variant="titleLarge">Edit Profile {userData?.id}</Text>
+      {/* TODO: Remove this later */}
+      <HelperText type="error" visible={!!errors.dateOfBirth}>
+        {errors.dateOfBirth?.message}
+      </HelperText>
+      <HelperText type="error" visible={!!errors.gender}>
+        {errors.gender?.message}
+      </HelperText>
+      <HelperText type="error" visible={!!errors.name}>
+        {errors.name?.message}
+      </HelperText>
+      <HelperText type="error" visible={!!errors.phone}>
+        {errors.phone?.message}
+      </HelperText>
+      <HelperText type="error" visible={!!errors.profileImage}>
+        {errors.profileImage?.message}
+      </HelperText>
+      <HelperText type="error" visible={!!errors.relationshipStatus}>
+        {errors.relationshipStatus?.message}
+      </HelperText>
 
       {/* Username Field */}
       <Controller
@@ -73,8 +121,8 @@ export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             mode="outlined"
-            label="Username"
-            placeholder="Enter your username"
+            label="Name"
+            placeholder="Enter your name"
             value={value}
             onBlur={onBlur}
             onChangeText={onChange}
@@ -118,7 +166,11 @@ export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
       </HelperText>
 
       {/* Submit Button */}
-      <Button mode="contained" onPress={handleSubmit(onSubmit)} loading={loading}>
+      <Button
+        mode="contained"
+        onPress={handleSubmit(onSubmit)}
+        loading={loading}
+      >
         {isEditing ? "Update Profile" : "Create Profile"}
       </Button>
     </View>

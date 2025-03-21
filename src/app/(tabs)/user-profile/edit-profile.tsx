@@ -1,15 +1,13 @@
 import { EditProfileForm } from "@/src/components/form/EditProfileForm";
 import React from "react";
+import { ScrollView } from "react-native-gesture-handler";
 import { Text } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EditProfileScreen() {
   return (
-    <SafeAreaView
-      style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-    >
+    <ScrollView>
       <Text>Edit Profile</Text>
-      <EditProfileForm/>
-    </SafeAreaView>
+      <EditProfileForm />
+    </ScrollView>
   );
 }
