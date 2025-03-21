@@ -12,7 +12,7 @@ export default function TabLayout() {
   const [firstTime, setFirstTime] = useState<boolean | null>(null); // used for onboarding showing
 
   // Change this while development to show tab based on role, will be replaced by user.role after;
-  const testRole: UserRole = "client";
+  const testRole: UserRole = "admin";
 
   useEffect(() => {
     console.log("🛠 TabLayout useAuth() Update → User:", user);
