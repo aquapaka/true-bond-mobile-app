@@ -1,18 +1,18 @@
 import { getCollection } from "@/src/lib/firestore";
 import { LearningResource } from "@/src/types/LearningResource";
+import { getReadingTime } from "@/src/utils/generalUtils";
 import { showNotification } from "@/src/utils/notificationUtils";
+import { Link, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Image,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { Surface, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Card } from "react-native-paper";
-import { Link, useNavigation } from "expo-router";
 
 export default function ClientLearnScreen() {
   const [learningResources, setLearningResources] = useState<
@@ -20,6 +20,7 @@ export default function ClientLearnScreen() {
   >([]);
   const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(true);
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,34 +49,55 @@ export default function ClientLearnScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, padding: 10 }}>
+    <SafeAreaView style={{ flex: 1, padding: 8 }}>
       <FlatList
         data={learningResources}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Link href={`/(tabs)/client-learn/blog-detail/${item.id}`} asChild>
-            <TouchableOpacity
-              style={{
-                marginBottom: 15,
-                padding: 10,
-                backgroundColor: "#fff",
-                borderRadius: 10,
-                shadowColor: "#000",
-                shadowOpacity: 0.1,
-                shadowRadius: 5,
-                elevation: 2,
-              }}
-            >
-              <Image
-                source={{ uri: item.imageUrl }}
-                style={{ width: "100%", height: 150, borderRadius: 10 }}
-              />
-              <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 8 }}>
-                {item.title}
-              </Text>
-              <Text style={{ color: "gray", marginTop: 5 }}>
-                {item.category}
-              </Text>
+            <TouchableOpacity style={{ padding: 8 }}>
+              <Surface
+                style={{
+                  borderRadius: 12,
+                  flexDirection: "row",
+                  padding: 12,
+                  gap: 12,
+                }}
+              >
+                <Image
+                  source={{ uri: item.imageUrl }}
+                  style={{ width: 110, height: 120, borderRadius: 8 }}
+                />
+                <View
+                  style={{
+                    justifyContent: "space-between",
+                    flex: 1,
+                  }}
+                >
+                  <Text variant="headlineSmall">{item.title}</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 4,
+                    }}
+                  >
+                    <Image
+                      source={{ uri: item.imageUrl }}
+                      style={{ width: 24, height: 24, borderRadius: 100 }}
+                    />
+                    <Text variant="titleSmall" style={{ flex: 1 }}>
+                      {item.title}
+                    </Text>
+                    <Text
+                      variant="bodySmall"
+                      style={{ color: theme.colors.tertiary }}
+                    >
+                      {getReadingTime(item.content)}
+                    </Text>
+                  </View>
+                </View>
+              </Surface>
             </TouchableOpacity>
           </Link>
         )}

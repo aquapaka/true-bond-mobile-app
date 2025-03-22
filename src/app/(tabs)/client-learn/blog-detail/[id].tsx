@@ -1,15 +1,18 @@
 import { getDocument } from "@/src/lib/firestore";
 import { LearningResource } from "@/src/types/LearningResource";
+import { getReadingTime } from "@/src/utils/generalUtils";
 import { showNotification } from "@/src/utils/notificationUtils";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Image, ScrollView, View } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BlogDetailScreen() {
   const { id } = useLocalSearchParams();
   const [loading, setLoading] = useState(true);
   const [blog, setBlog] = useState<LearningResource | null>(null);
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchBlogData = async () => {
@@ -62,64 +65,51 @@ export default function BlogDetailScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <ScrollView contentContainerStyle={{ padding: 15 }}>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
         <Image
           source={{ uri: blog.imageUrl }}
           style={{
             width: "100%",
             height: 250,
-            borderRadius: 10,
+            borderRadius: 8,
             marginBottom: 15,
           }}
           resizeMode="cover"
         />
 
+        <Text variant="headlineLarge">{blog.title}</Text>
+
         <Text
+          variant="labelMedium"
           style={{
-            fontSize: 24,
-            fontWeight: "bold",
-            marginBottom: 8,
-            color: "#333",
+            color: theme.colors.tertiary,
+            marginTop: 8,
           }}
         >
-          {blog.title}
+          {blog.category}
         </Text>
 
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginBottom: 15,
+            marginVertical: 12,
+            gap: 12,
           }}
         >
           <Image
             source={{ uri: blog.authorImageUrl }}
             style={{
-              width: 40,
-              height: 40,
+              width: 32,
+              height: 32,
               borderRadius: 20,
-              marginRight: 10,
             }}
           />
-          <Text style={{ fontSize: 16, fontWeight: "bold", color: "#555" }}>
-            {blog.author}
-          </Text>
+          <Text variant="titleMedium">{blog.author}</Text>
+          <Text variant="titleSmall">{getReadingTime(blog.content)}</Text>
         </View>
 
-        <Text
-          style={{
-            fontSize: 14,
-            fontWeight: "bold",
-            color: "#3498db",
-            marginBottom: 10,
-          }}
-        >
-          #{blog.category}
-        </Text>
-
-        <Text style={{ fontSize: 16, lineHeight: 24, color: "#444" }}>
-          {blog.content}
-        </Text>
+        <Text variant="bodyMedium">{blog.content}</Text>
       </ScrollView>
     </SafeAreaView>
   );

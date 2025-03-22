@@ -119,6 +119,126 @@ const TruebondDarkTheme = {
   },
 };
 
+export const fontsForNavigation = {
+  regular: { fontFamily: "Taviraj-Regular", fontWeight: "400" },
+  medium: { fontFamily: "Taviraj-Medium", fontWeight: "500" },
+  bold: { fontFamily: "Taviraj-Bold", fontWeight: "700" },
+  heavy: { fontFamily: "Taviraj-Black", fontWeight: "900" },
+};
+
+export const fontsForPaper = {
+  displaySmall: {
+    fontFamily: "Taviraj-Black",
+    fontSize: 30,
+    fontWeight: "400",
+    letterSpacing: 0,
+    lineHeight: 44,
+  },
+  displayMedium: {
+    fontFamily: "Taviraj-Black",
+    fontSize: 38,
+    fontWeight: "400",
+    letterSpacing: 0,
+    lineHeight: 52,
+  },
+  displayLarge: {
+    fontFamily: "Taviraj-Black",
+    fontSize: 48,
+    fontWeight: "400",
+    letterSpacing: 0,
+    lineHeight: 64,
+  },
+  headlineSmall: {
+    fontFamily: "Taviraj-Bold",
+    fontSize: 16,
+    fontWeight: "400",
+    letterSpacing: 0,
+    lineHeight: 32,
+  },
+  headlineMedium: {
+    fontFamily: "Taviraj-Bold",
+    fontSize: 22,
+    fontWeight: "400",
+    letterSpacing: 0,
+    lineHeight: 36,
+  },
+  headlineLarge: {
+    fontFamily: "Taviraj-Bold",
+    fontSize: 28,
+    fontWeight: "400",
+    letterSpacing: 0,
+    lineHeight: 40,
+  },
+  titleSmall: {
+    fontFamily: "Taviraj-Medium",
+    fontSize: 12,
+    fontWeight: "500",
+    letterSpacing: 0.1,
+    lineHeight: 20,
+  },
+  titleMedium: {
+    fontFamily: "Taviraj-Medium",
+    fontSize: 16,
+    fontWeight: "500",
+    letterSpacing: 0.15,
+    lineHeight: 24,
+  },
+  titleLarge: {
+    fontFamily: "Taviraj-Medium",
+    fontSize: 20,
+    fontWeight: "400",
+    letterSpacing: 0,
+    lineHeight: 28,
+  },
+  labelSmall: {
+    fontFamily: "Taviraj-Medium",
+    fontSize: 11,
+    fontWeight: "500",
+    letterSpacing: 0.5,
+    lineHeight: 16,
+  },
+  labelMedium: {
+    fontFamily: "Taviraj-Medium",
+    fontSize: 12,
+    fontWeight: "500",
+    letterSpacing: 0.5,
+    lineHeight: 16,
+  },
+  labelLarge: {
+    fontFamily: "Taviraj-Medium",
+    fontSize: 14,
+    fontWeight: "500",
+    letterSpacing: 0.1,
+    lineHeight: 20,
+  },
+  bodySmall: {
+    fontFamily: "Taviraj-Regular",
+    fontSize: 12,
+    fontWeight: "400",
+    letterSpacing: 0.4,
+    lineHeight: 16,
+  },
+  bodyMedium: {
+    fontFamily: "Taviraj-Regular",
+    fontSize: 14,
+    fontWeight: "400",
+    letterSpacing: 0.25,
+    lineHeight: 20,
+  },
+  bodyLarge: {
+    fontFamily: "Taviraj-Regular",
+    fontSize: 16,
+    fontWeight: "400",
+    letterSpacing: 0.15,
+    lineHeight: 24,
+  },
+  default: {
+    fontFamily: "Taviraj-Regular",
+    fontWeight: "400",
+    letterSpacing: 0,
+  },
+};
+
 export const lightTheme = {
   ...MD3LightTheme,
   ...TruebondLightTheme,
