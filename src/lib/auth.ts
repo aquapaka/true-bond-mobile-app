@@ -36,7 +36,7 @@ export async function signUp(email: string, password: string) {
     } else {
       console.log("📝 Creating new user document...");
       await setDoc(userRef, {
-        uid: user.uid,
+        id: user.uid,
         email,
         role,
         createdAt: new Date().toISOString(),
