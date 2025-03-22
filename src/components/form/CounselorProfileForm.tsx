@@ -6,13 +6,16 @@ import { Button, Chip, HelperText, Text, TextInput } from "react-native-paper";
 import { z } from "zod";
 import ImageUploader from "./custom/ImageUploader";
 import { showNotification } from "@/src/utils/notificationUtils";
-import { addDocument } from "@/src/lib/firestore";
+import { addDocument, updateDocument } from "@/src/lib/firestore";
 import {
   BookingSlot,
   CounselorProfile,
   TimeSlot,
   Weekday,
 } from "@/src/types/CounselorProfile";
+import { updateCurrentUser } from "firebase/auth";
+import { UserData } from "@/src/types/User";
+import { useAuth } from "@/src/context/AuthProvider";
 
 const weekdays: Weekday[] = [
   "Monday",
@@ -81,6 +84,7 @@ const CounselorProfileForm = () => {
       availability: [],
     },
   });
+  const { userData } = useAuth();
 
   const [selectedDays, setSelectedDays] = useState<Record<string, string[]>>(
     {}
@@ -112,6 +116,8 @@ const CounselorProfileForm = () => {
   };
 
   async function onSubmit(data: CounselorProfileFormData) {
+    if (!userData) return;
+
     try {
       const addedProfile = await addDocument<CounselorProfile>(
         "counselorProfiles",
@@ -122,6 +128,11 @@ const CounselorProfileForm = () => {
           status: "applying",
         }
       );
+
+      // Update userdata counselorProfileId
+      await updateDocument<UserData>("users", userData.id, {
+        counselorProfileId: addedProfile.id,
+      });
 
       // Reset form after successful
       if (addedProfile) {

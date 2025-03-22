@@ -1,5 +1,6 @@
 import SessionCard from "@/src/components/tab-specific/client-sessions/SessionCard";
 import { Session } from "@/src/types/Session";
+import { Link } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -32,9 +33,11 @@ export default function ClientSessionsScreen() {
             <SessionCard key={session.id} session={session} />
           ))}
         </Surface>
-        <Button mode="contained" onPress={() => null}>
-          Schedule New Session
-        </Button>
+        <Link href={"/(tabs)/client-sessions/schedule-new-session"} asChild>
+          <Button mode="contained" onPress={() => null}>
+            Schedule New Session
+          </Button>
+        </Link>
       </View>
     </ScrollView>
   );
