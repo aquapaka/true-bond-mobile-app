@@ -1,11 +1,7 @@
 import { addDocument } from "@/src/lib/firestore";
-import {
-  LearningResource,
-  LearningResourceCategory,
-} from "@/src/types/LearningResource";
+import { LearningResource } from "@/src/types/LearningResource";
 import { showNotification } from "@/src/utils/notificationUtils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FirebaseError } from "firebase/app";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import {
@@ -36,8 +32,9 @@ const defaultValues: LearningResourceFormData = {
   title: "",
   content: "",
   imageUrl: "",
-  author: "",
-  authorImageUrl: "",
+  author: "True Bond",
+  authorImageUrl:
+    "https://img.freepik.com/free-vector/red-calligraphy-heart-2_78370-5897.jpg?semt=ais_hybrid",
   category: "communication", // Default category
 };
 
@@ -106,6 +103,7 @@ export function LearningResourceForm({
           <TextInput
             mode="outlined"
             label="Content"
+            multiline
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -145,7 +143,7 @@ export function LearningResourceForm({
         {errors.imageUrl?.message}
       </HelperText>
 
-      <Controller
+      {/* <Controller
         control={control}
         name="author"
         render={({ field: { onChange, onBlur, value } }) => (
@@ -172,19 +170,10 @@ export function LearningResourceForm({
       />
       <HelperText type="error" visible={!!errors.authorImageUrl}>
         {errors.authorImageUrl?.message}
-      </HelperText>
+      </HelperText> */}
 
       <Button mode="contained" onPress={handleSubmit(onSubmit)}>
         {isEditing ? "Update Resource" : "Create Resource"}
-      </Button>
-
-      <Button
-        mode="contained-tonal"
-        onPress={() => {
-          showNotification("success", "Demo", "This is demo description");
-        }}
-      >
-        {"Demo Notification"}
       </Button>
     </View>
   );
