@@ -39,11 +39,7 @@ export default function RatingOverview({ reviews }: { reviews: Review[] }) {
         >
           <View style={{ flex: 1 }}>
             <ProgressBar
-              progress={
-                reviews.length > 0
-                  ? rating5Count / reviews.length
-                  : 0
-              }
+              progress={reviews.length > 0 ? rating5Count / reviews.length : 0}
             />
           </View>
           <Text variant="labelSmall" style={{ fontWeight: "bold" }}>
@@ -61,11 +57,7 @@ export default function RatingOverview({ reviews }: { reviews: Review[] }) {
         >
           <View style={{ flex: 1 }}>
             <ProgressBar
-              progress={
-                reviews.length > 0
-                  ? rating4Count / reviews.length
-                  : 0
-              }
+              progress={reviews.length > 0 ? rating4Count / reviews.length : 0}
             />
           </View>
           <Text variant="labelSmall" style={{ fontWeight: "bold" }}>
@@ -83,11 +75,7 @@ export default function RatingOverview({ reviews }: { reviews: Review[] }) {
         >
           <View style={{ flex: 1 }}>
             <ProgressBar
-              progress={
-                reviews.length > 0
-                  ? rating3Count / reviews.length
-                  : 0
-              }
+              progress={reviews.length > 0 ? rating3Count / reviews.length : 0}
             />
           </View>
           <Text variant="labelSmall" style={{ fontWeight: "bold" }}>
@@ -106,11 +94,7 @@ export default function RatingOverview({ reviews }: { reviews: Review[] }) {
         >
           <View style={{ flex: 1 }}>
             <ProgressBar
-              progress={
-                reviews.length > 0
-                  ? rating2Count / reviews.length
-                  : 0
-              }
+              progress={reviews.length > 0 ? rating2Count / reviews.length : 0}
             />
           </View>
           <Text variant="labelSmall" style={{ fontWeight: "bold" }}>
@@ -128,11 +112,7 @@ export default function RatingOverview({ reviews }: { reviews: Review[] }) {
         >
           <View style={{ flex: 1 }}>
             <ProgressBar
-              progress={
-                reviews.length > 0
-                  ? rating1Count / reviews.length
-                  : 0
-              }
+              progress={reviews.length > 0 ? rating1Count / reviews.length : 0}
             />
           </View>
           <Text variant="labelSmall" style={{ fontWeight: "bold" }}>

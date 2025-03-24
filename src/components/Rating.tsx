@@ -16,8 +16,13 @@ export default function Rating({ rating }: { rating: number }) {
       {hasHalf && <Icon name="star-half" color={"yellow"} size={16} />}
       {[...Array(hasHalf ? 5 - fullCount - 1 : 5 - fullCount)].map(
         (val, index) => (
-          <Icon key={index} name="star-outline" color={TruebondLightTheme.colors.warning} size={16} />
-        )
+          <Icon
+            key={index}
+            name="star-outline"
+            color={TruebondLightTheme.colors.warning}
+            size={16}
+          />
+        ),
       )}
     </View>
   );

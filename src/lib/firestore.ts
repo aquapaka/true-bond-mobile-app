@@ -19,7 +19,7 @@ import {
 export async function setDocument<T extends DocumentData>(
   collectionName: CollectionName,
   id: string,
-  data: T
+  data: T,
 ) {
   const ref = doc(database, collectionName, id);
   return await setDoc(ref, data, { merge: true });
@@ -28,7 +28,7 @@ export async function setDocument<T extends DocumentData>(
 /** 🔹 Get a document */
 export async function getDocument<T>(
   collectionName: CollectionName,
-  id: string
+  id: string,
 ): Promise<T | null> {
   console.log("Getting document from " + collectionName);
 
@@ -41,7 +41,7 @@ export async function getDocument<T>(
 export async function updateDocument<T>(
   collectionName: CollectionName,
   id: string,
-  data: Partial<T>
+  data: Partial<T>,
 ) {
   const ref = doc(database, collectionName, id);
   return await updateDoc(ref, data);
@@ -50,7 +50,7 @@ export async function updateDocument<T>(
 /** 🔹 Delete a document */
 export async function deleteDocument(
   collectionName: CollectionName,
-  id: string
+  id: string,
 ) {
   const ref = doc(database, collectionName, id);
   return await deleteDoc(ref);
@@ -59,7 +59,7 @@ export async function deleteDocument(
 /** 🔹 Add a document (auto ID) */
 export async function addDocument<T extends DocumentData & { id: string }>(
   collectionName: CollectionName,
-  data: Omit<T, "id" | "createdAt" | "updatedAt"> // Prevent manually setting the ID
+  data: Omit<T, "id" | "createdAt" | "updatedAt">, // Prevent manually setting the ID
 ): Promise<T> {
   const ref = collection(database, collectionName);
   const docRef = await addDoc(ref, data); // Add document without `id`
@@ -79,7 +79,7 @@ export async function addDocument<T extends DocumentData & { id: string }>(
 
 /** 🔹 Get all documents from a collection */
 export async function getCollection<T>(
-  collectionName: CollectionName
+  collectionName: CollectionName,
 ): Promise<T[]> {
   const ref = collection(database, collectionName);
   const snapshot = await getDocs(ref);
@@ -90,7 +90,7 @@ export async function getCollection<T>(
 export async function queryCollection<T>(
   collectionName: CollectionName,
   field: string,
-  value: any
+  value: any,
 ): Promise<T[]> {
   const ref = collection(database, collectionName);
   const q = query(ref, where(field, "==", value));

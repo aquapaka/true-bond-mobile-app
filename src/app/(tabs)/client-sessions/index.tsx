@@ -31,7 +31,7 @@ export default function ClientSessionsScreen() {
         try {
           const result =
             await sessionApi.getAllSessionsWithCounselorInfoByClientId(
-              userData.id
+              userData.id,
             );
           setSessions(result);
         } catch (error) {
@@ -40,7 +40,7 @@ export default function ClientSessionsScreen() {
       };
 
       fetchData();
-    }, [userData])
+    }, [userData]),
   );
 
   if (!sessions)

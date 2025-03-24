@@ -39,7 +39,7 @@ const LearningResourceSchema = z.object({
     categories as [LearningResourceCategory, ...LearningResourceCategory[]],
     {
       message: "Invalid category.",
-    }
+    },
   ),
 });
 
@@ -74,7 +74,7 @@ export function LearningResourceForm({
       } else {
         const addedLearningResource = await addDocument<LearningResource>(
           "learningresources",
-          data
+          data,
         );
         // Reset form after successful
         if (addedLearningResource) {
@@ -82,7 +82,7 @@ export function LearningResourceForm({
           showNotification(
             "success",
             "Successfully added!",
-            "Learning Resource has been added"
+            "Learning Resource has been added",
           );
         }
       }

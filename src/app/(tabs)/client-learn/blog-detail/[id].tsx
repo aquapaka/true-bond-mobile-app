@@ -19,7 +19,7 @@ export default function BlogDetailScreen() {
       try {
         const result = await getDocument<LearningResource>(
           "learningresources",
-          id as string
+          id as string,
         );
         setBlog(result);
       } catch (error) {

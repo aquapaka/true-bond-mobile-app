@@ -4,16 +4,12 @@ import { View } from "react-native";
 import { Chip, Text } from "react-native-paper";
 import ReviewsList from "./ReviewsList";
 
-export default function ReviewsSection({
-  reviews,
-}: {
-  reviews: Review[];
-}) {
+export default function ReviewsSection({ reviews }: { reviews: Review[] }) {
   const [selectedRating, setSelectedRating] = useState<number | null>();
   const ratings = [5, 4, 3, 2, 1];
   const filteredReviews = useMemo(
     () => reviews.filter((review) => selectedRating === review.rating),
-    [reviews, selectedRating]
+    [reviews, selectedRating],
   );
 
   return (
@@ -38,8 +34,16 @@ export default function ReviewsSection({
           </Chip>
         ))}
       </View>
-      {reviews.length ? <ReviewsList reviews={selectedRating ? filteredReviews : reviews} /> : <Text variant={"labelMedium"} style={{textAlign: 'center', marginVertical: 32}}>This counselor haven't received any review</Text>}
-
+      {reviews.length ? (
+        <ReviewsList reviews={selectedRating ? filteredReviews : reviews} />
+      ) : (
+        <Text
+          variant={"labelMedium"}
+          style={{ textAlign: "center", marginVertical: 32 }}
+        >
+          This counselor haven't received any review
+        </Text>
+      )}
     </View>
   );
 }

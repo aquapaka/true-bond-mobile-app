@@ -57,7 +57,7 @@ export default function SessionsDetailScreen() {
     showNotification(
       "success",
       "Update success",
-      "Meeting Link has been updated"
+      "Meeting Link has been updated",
     );
     setSession({ ...session, meetLink: meetingLink });
     hideModal();
@@ -217,7 +217,7 @@ export default function SessionsDetailScreen() {
                   showNotification(
                     "info",
                     "Meet link has been copied into clipboard",
-                    ""
+                    "",
                   );
                 }}
               />

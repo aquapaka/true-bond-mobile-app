@@ -64,7 +64,7 @@ const CounselorProfileSchema = z.object({
       slots: z
         .array(z.string())
         .min(1, "At least one time slot must be selected."),
-    })
+    }),
   ),
 });
 
@@ -95,7 +95,7 @@ const CounselorProfileForm = () => {
   const { userData } = useAuth();
 
   const [selectedDays, setSelectedDays] = useState<Record<string, string[]>>(
-    {}
+    {},
   );
 
   const toggleDay = (day: string) => {
@@ -138,7 +138,7 @@ const CounselorProfileForm = () => {
           availability: data.availability as BookingSlot[],
           rating: 5,
           status: "applying",
-        }
+        },
       );
 
       // Update userdata counselorProfileId
@@ -152,7 +152,7 @@ const CounselorProfileForm = () => {
         showNotification(
           "success",
           "Your information has been sent!",
-          "It will be process within 2 days"
+          "It will be process within 2 days",
         );
         router.back();
       }
@@ -352,7 +352,7 @@ const CounselorProfileForm = () => {
               day,
               slots,
             })),
-          })
+          }),
         )}
         disabled={isSubmitting}
         style={{ marginTop: 20 }}

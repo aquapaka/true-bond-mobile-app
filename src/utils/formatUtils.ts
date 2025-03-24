@@ -2,7 +2,7 @@ import { formatRelative } from "date-fns";
 import { Timestamp } from "firebase/firestore";
 
 export function formatDate(
-  input: Date | { seconds: number; nanoseconds: number }
+  input: Date | { seconds: number; nanoseconds: number },
 ): string {
   // Convert Firestore Timestamp to Date if necessary
   const date = input instanceof Date ? input : new Date(input.seconds * 1000);
@@ -19,7 +19,7 @@ export function formatDate(
 }
 
 export function formatShortDate(
-  date: Date | string | number | Timestamp
+  date: Date | string | number | Timestamp,
 ): string {
   let d: Date;
 
@@ -41,7 +41,7 @@ export function formatTwoDecimal(number: number) {
 }
 
 export function formatRelativeDate(
-  input: Date | { seconds: number; nanoseconds: number }
+  input: Date | { seconds: number; nanoseconds: number },
 ): string {
   // Convert Firestore Timestamp to Date if necessary
   const date = input instanceof Date ? input : new Date(input.seconds * 1000);
@@ -52,7 +52,7 @@ export function formatRelativeDate(
   const targetDate = new Date(
     date.getFullYear(),
     date.getMonth(),
-    date.getDate()
+    date.getDate(),
   );
   const diffTime = targetDate.getTime() - today.getTime();
   const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));

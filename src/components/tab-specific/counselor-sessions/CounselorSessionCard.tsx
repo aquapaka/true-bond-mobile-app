@@ -23,7 +23,7 @@ export default function CounselorSessionCard({
       onPress={() =>
         router.navigate(
           // @ts-ignore
-          `/(tabs)/counselor-sessions/session-details/${session.id}`
+          `/(tabs)/counselor-sessions/session-details/${session.id}`,
         )
       }
     >
@@ -92,7 +92,7 @@ export default function CounselorSessionCard({
                     showNotification(
                       "error",
                       "Error",
-                      "Cannot open meet link URL"
+                      "Cannot open meet link URL",
                     );
                   }
                 }}

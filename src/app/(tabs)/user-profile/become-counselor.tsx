@@ -1,11 +1,8 @@
-import CounselorProfileForm, {
-  CounselorProfileFormData,
-} from "@/src/components/form/CounselorProfileForm";
+import CounselorProfileForm from "@/src/components/form/CounselorProfileForm";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Text, useTheme } from "react-native-paper";
-import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { showNotification } from "@/src/utils/notificationUtils";
 
 export default function BecomeCounselorScreen() {
   const theme = useTheme();

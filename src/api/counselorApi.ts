@@ -14,7 +14,7 @@ export const counselorApi = {
     // Fetch counselor profile
     const profile = await getDocument<CounselorProfile>(
       "counselorProfiles",
-      user.counselorProfileId
+      user.counselorProfileId,
     );
     if (!profile) return null; // Return null if profile doesn't exist
 
@@ -28,7 +28,7 @@ export const counselorApi = {
 
     // Filter users who are counselors (have `counselorProfileId`)
     const counselorUsers = users.filter(
-      (user) => user.role === "counselor" && user.counselorProfileId
+      (user) => user.role === "counselor" && user.counselorProfileId,
     );
 
     // Fetch all counselor profiles
@@ -36,7 +36,7 @@ export const counselorApi = {
 
     // Create a Map for quick lookup by `counselorProfileId`
     const profileMap = new Map(
-      profiles.map((profile) => [profile.id, profile])
+      profiles.map((profile) => [profile.id, profile]),
     );
 
     // Merge UserData with their corresponding CounselorProfile
@@ -60,7 +60,7 @@ export const counselorApi = {
 
     // Create a Map for quick lookup by `counselorProfileId`
     const profileMap = new Map(
-      profiles.map((profile) => [profile.id, profile])
+      profiles.map((profile) => [profile.id, profile]),
     );
 
     // Merge UserData with their corresponding CounselorProfile
@@ -88,7 +88,7 @@ export const counselorApi = {
     await updateDocument<CounselorProfile>(
       "counselorProfiles",
       userData.counselorProfileId,
-      { status: "approved" }
+      { status: "approved" },
     );
 
     console.log(`User ${userId} applied as a counselor`);
@@ -107,7 +107,7 @@ export const counselorApi = {
     await updateDocument<CounselorProfile>(
       "counselorProfiles",
       userData.counselorProfileId,
-      { status: "declined" }
+      { status: "declined" },
     );
 
     console.log(`User ${userId} application is declined`);

@@ -22,7 +22,7 @@ export const sessionApi = {
     meetLink: string,
     scheduledAt: Date,
     notes: string,
-    sessionPrice: number
+    sessionPrice: number,
   ): Promise<Session | null> => {
     try {
       const newSession: Omit<Session, "id" | "createdAt" | "updatedAt"> = {
@@ -45,21 +45,21 @@ export const sessionApi = {
   },
   getActiveSession: async (
     clientId: string,
-    counselorId: string
+    counselorId: string,
   ): Promise<Session | null> => {
     try {
       // Query Firestore for sessions with the given client
       const sessions = await queryCollection<Session>(
         "sessions",
         "clientId",
-        clientId
+        clientId,
       );
 
       // Find a session that is either "pending" or "confirmed" with the same counselor
       const activeSession = sessions.find(
         (session) =>
           session.counselorId === counselorId &&
-          (session.status === "pending" || session.status === "confirmed")
+          (session.status === "pending" || session.status === "confirmed"),
       );
 
       return activeSession || null;
@@ -70,14 +70,14 @@ export const sessionApi = {
   },
 
   getAllSessionsWithCounselorInfoByClientId: async (
-    clientId: string
+    clientId: string,
   ): Promise<SessionWithCounselor[]> => {
     try {
       // Fetch all sessions for the client
       const sessions = await queryCollection<Session>(
         "sessions",
         "clientId",
-        clientId
+        clientId,
       );
 
       // Fetch and merge counselor details
@@ -88,7 +88,7 @@ export const sessionApi = {
           // Get UserData from Users collection
           const userData = await getDocument<UserData>(
             "users",
-            session.counselorId
+            session.counselorId,
           );
 
           if (!userData || !userData.counselorProfileId) {
@@ -98,7 +98,7 @@ export const sessionApi = {
           // Get CounselorProfile from CounselorProfiles collection
           const counselorProfile = await getDocument<CounselorProfile>(
             "counselorProfiles",
-            userData.counselorProfileId
+            userData.counselorProfileId,
           );
 
           if (!counselorProfile) {
@@ -112,7 +112,7 @@ export const sessionApi = {
           };
 
           return { ...session, counselor };
-        })
+        }),
       );
 
       return sessionsWithCounselor;
@@ -123,14 +123,14 @@ export const sessionApi = {
   },
 
   getAllSessionsWithUserDataByCounselorId: async (
-    counselorId: string
+    counselorId: string,
   ): Promise<SessionWithClient[]> => {
     try {
       // Fetch all sessions for the counselor
       const sessions = await queryCollection<Session>(
         "sessions",
         "counselorId",
-        counselorId
+        counselorId,
       );
 
       // Fetch and merge client details
@@ -141,11 +141,11 @@ export const sessionApi = {
           // Get UserData from Users collection
           const userData = await getDocument<UserData>(
             "users",
-            session.clientId
+            session.clientId,
           );
 
           return { ...session, client: userData || null };
-        })
+        }),
       );
 
       return sessionsWithClient;
@@ -156,7 +156,7 @@ export const sessionApi = {
   },
 
   getSessionWithClientById: async (
-    sessionId: string
+    sessionId: string,
   ): Promise<SessionWithClient | null> => {
     try {
       // Fetch session data
@@ -178,7 +178,7 @@ export const sessionApi = {
 
   updateSession: async (
     sessionId: string,
-    partialData: Partial<Session>
+    partialData: Partial<Session>,
   ): Promise<void> => {
     try {
       await updateDocument<Session>("sessions", sessionId, partialData);

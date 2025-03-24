@@ -1,4 +1,7 @@
-export type LearningResourceCategory = "communication" | "finances" | "conflict_resolution";
+export type LearningResourceCategory =
+  | "communication"
+  | "finances"
+  | "conflict_resolution";
 
 export interface LearningResource {
   id: string; // Firestore Auto ID
