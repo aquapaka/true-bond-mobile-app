@@ -49,13 +49,17 @@ export default function ClientLearnScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, padding: 8 }}>
+    <View style={{ flex: 1 }}>
       <FlatList
         data={learningResources}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={{
+          padding: 12,
+          gap: 12,
+        }}
         renderItem={({ item }) => (
           <Link href={`/(tabs)/client-learn/blog-detail/${item.id}`} asChild>
-            <TouchableOpacity style={{ padding: 8 }}>
+            <TouchableOpacity>
               <Surface
                 style={{
                   borderRadius: 12,
@@ -66,7 +70,7 @@ export default function ClientLearnScreen() {
               >
                 <Image
                   source={{ uri: item.imageUrl }}
-                  style={{ width: 110, height: 120, borderRadius: 8 }}
+                  style={{ width: 110, height: 120, borderRadius: 6 }}
                 />
                 <View
                   style={{
@@ -102,6 +106,6 @@ export default function ClientLearnScreen() {
           </Link>
         )}
       />
-    </SafeAreaView>
+    </View>
   );
 }

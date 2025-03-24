@@ -64,53 +64,51 @@ export default function BlogDetailScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
+    <ScrollView contentContainerStyle={{ padding: 16 }}>
+      <Image
+        source={{ uri: blog.imageUrl }}
+        style={{
+          width: "100%",
+          height: 250,
+          borderRadius: 8,
+          marginBottom: 15,
+        }}
+        resizeMode="cover"
+      />
+
+      <Text variant="headlineLarge">{blog.title}</Text>
+
+      <Text
+        variant="labelMedium"
+        style={{
+          color: theme.colors.tertiary,
+          marginTop: 8,
+        }}
+      >
+        {blog.category}
+      </Text>
+
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginVertical: 12,
+          gap: 12,
+        }}
+      >
         <Image
-          source={{ uri: blog.imageUrl }}
+          source={{ uri: blog.authorImageUrl }}
           style={{
-            width: "100%",
-            height: 250,
-            borderRadius: 8,
-            marginBottom: 15,
+            width: 32,
+            height: 32,
+            borderRadius: 20,
           }}
-          resizeMode="cover"
         />
+        <Text variant="titleMedium">{blog.author}</Text>
+        <Text variant="titleSmall">{getReadingTime(blog.content)}</Text>
+      </View>
 
-        <Text variant="headlineLarge">{blog.title}</Text>
-
-        <Text
-          variant="labelMedium"
-          style={{
-            color: theme.colors.tertiary,
-            marginTop: 8,
-          }}
-        >
-          {blog.category}
-        </Text>
-
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginVertical: 12,
-            gap: 12,
-          }}
-        >
-          <Image
-            source={{ uri: blog.authorImageUrl }}
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 20,
-            }}
-          />
-          <Text variant="titleMedium">{blog.author}</Text>
-          <Text variant="titleSmall">{getReadingTime(blog.content)}</Text>
-        </View>
-
-        <Text variant="bodyMedium">{blog.content}</Text>
-      </ScrollView>
-    </SafeAreaView>
+      <Text variant="bodyMedium">{blog.content}</Text>
+    </ScrollView>
   );
 }
