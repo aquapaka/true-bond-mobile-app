@@ -31,7 +31,11 @@ export default function ProfileScreen() {
         ]}
       >
         <StatusBar style="auto" />
-        <View>
+        <View
+          style={{
+            marginBottom: 100,
+          }}
+        >
           {/* Profile Card */}
           <Card style={styles.profileCard} elevation={2}>
             <Card.Content style={styles.profileInfo}>
@@ -172,40 +176,42 @@ export default function ProfileScreen() {
           </Card>
 
           {/* Counselor Application */}
-          <Card style={styles.counselorCard} elevation={2}>
-            <Card.Title
-              title="Become a Counselor"
-              titleStyle={{ color: theme.colors.primary }}
-              subtitle="Help others with your expertise"
-              left={(props) => (
-                <Avatar.Icon
-                  {...props}
-                  icon="heart"
-                  size={40}
-                  style={{ backgroundColor: theme.colors.primaryContainer }}
-                />
-              )}
-            />
-            <Card.Content>
-              <Text variant="bodyMedium" style={styles.counselorText}>
-                Share your knowledge and experience by becoming a counselor on
-                our platform.
-              </Text>
-              <Link href={"/(tabs)/user-profile/become-counselor"} asChild>
-                <Button
-                  mode="contained-tonal"
-                  style={[
-                    styles.counselorButton,
-                    { backgroundColor: theme.colors.primaryContainer },
-                  ]}
-                  labelStyle={{ color: theme.colors.primary }}
-                  icon="account-tie"
-                >
-                  Apply to be a Counselor
-                </Button>
-              </Link>
-            </Card.Content>
-          </Card>
+          {userData?.role === "client" && !userData?.counselorProfileId && (
+            <Card style={styles.counselorCard} elevation={2}>
+              <Card.Title
+                title="Become a Counselor"
+                titleStyle={{ color: theme.colors.primary }}
+                subtitle="Help others with your expertise"
+                left={(props) => (
+                  <Avatar.Icon
+                    {...props}
+                    icon="heart"
+                    size={40}
+                    style={{ backgroundColor: theme.colors.primaryContainer }}
+                  />
+                )}
+              />
+              <Card.Content>
+                <Text variant="bodyMedium" style={styles.counselorText}>
+                  Share your knowledge and experience by becoming a counselor on
+                  our platform.
+                </Text>
+                <Link href={"/(tabs)/user-profile/become-counselor"} asChild>
+                  <Button
+                    mode="contained-tonal"
+                    style={[
+                      styles.counselorButton,
+                      { backgroundColor: theme.colors.primaryContainer },
+                    ]}
+                    labelStyle={{ color: theme.colors.primary }}
+                    icon="account-tie"
+                  >
+                    Apply to be a Counselor
+                  </Button>
+                </Link>
+              </Card.Content>
+            </Card>
+          )}
         </View>
       </View>
     </ScrollView>
@@ -283,9 +289,7 @@ const styles = StyleSheet.create({
   listItemDescription: {
     fontSize: 12,
   },
-  counselorCard: {
-    marginBottom: 100,
-  },
+  counselorCard: {},
   counselorText: {
     marginBottom: 16,
     lineHeight: 20,

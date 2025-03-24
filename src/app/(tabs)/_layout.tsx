@@ -2,7 +2,7 @@ import { HapticTab } from "@/src/components/HapticTab";
 import { useAuth } from "@/src/context/AuthProvider";
 import { UserRole } from "@/src/types/User";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { router, Tabs } from "expo-router";
+import { router, Tabs, usePathname } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Platform } from "react-native";
 
@@ -10,6 +10,7 @@ export default function TabLayout() {
   const { user, loading, userData, signOut } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
   const [firstTime, setFirstTime] = useState<boolean | null>(null); // used for onboarding showing
+  const currentPath = usePathname();
 
   // Change this while development to show tab based on role, will be replaced by user.role after;
   const testRole: UserRole = "admin";
@@ -20,17 +21,21 @@ export default function TabLayout() {
     if (user === undefined) return; // Prevent early unnecessary execution
     setIsChecking(true); // Start checking
     if (!user) {
-      console.log("🚪 Redirecting to login...");
-      setTimeout(() => {
-        router.replace("/(auth)/login");
-        setIsChecking(false);
-      }, 1);
+      if (!currentPath.startsWith("/(auth)")) {
+        console.log("🚪 Redirecting to login...");
+        setTimeout(() => {
+          router.replace("/(auth)/login");
+          setIsChecking(false);
+        }, 1);
+      }
     } else {
-      console.log("🏠 Redirecting to home...");
-      setTimeout(() => {
-        router.replace("/(tabs)/client-sessions");
-        setIsChecking(false);
-      }, 1);
+      if (!currentPath.startsWith("/(tabs)")) {
+        console.log("🏠 Redirecting to home...");
+        setTimeout(() => {
+          router.replace("/(tabs)");
+          setIsChecking(false);
+        }, 1);
+      }
     }
   }, [user]);
 

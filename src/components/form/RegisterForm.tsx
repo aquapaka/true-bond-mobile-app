@@ -53,7 +53,10 @@ export default function RegisterForm() {
   async function onSubmit(data: RegisterFormData) {
     try {
       await signUp(data.email, data.password);
-      router.navigate("/(tabs)");
+      // Give React state time to update before navigation
+      setTimeout(() => {
+        router.replace("/(tabs)");
+      }, 300);
     } catch (error) {
       if (error instanceof Error)
         setError("confirmPassword", { message: error.message });
