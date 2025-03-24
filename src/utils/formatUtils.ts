@@ -1,4 +1,5 @@
 import { formatRelative } from "date-fns";
+import { Timestamp } from "firebase/firestore";
 
 export function formatDate(
   input: Date | { seconds: number; nanoseconds: number }
@@ -17,8 +18,17 @@ export function formatDate(
   }).format(date);
 }
 
-export function formatShortDate(date: Date | string | number): string {
-  const d = new Date(date); // Ensure it's a Date object
+export function formatShortDate(
+  date: Date | string | number | Timestamp
+): string {
+  let d: Date;
+
+  if (date instanceof Timestamp) {
+    d = date.toDate(); // Convert Firestore Timestamp to Date
+  } else {
+    d = new Date(date); // Ensure it's a Date object
+  }
+
   const day = String(d.getDate()).padStart(2, "0");
   const month = String(d.getMonth() + 1).padStart(2, "0");
   const year = d.getFullYear();

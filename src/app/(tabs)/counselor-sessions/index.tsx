@@ -1,18 +1,17 @@
 import { sessionApi } from "@/src/api/sessionApi";
-import SessionCard from "@/src/components/tab-specific/client-sessions/SessionCard";
+import CounselorSessionCard from "@/src/components/tab-specific/counselor-sessions/CounselorSessionCard";
 import { useAuth } from "@/src/context/AuthProvider";
-import { SessionWithCounselor } from "@/src/types/Session";
+import { SessionWithClient } from "@/src/types/Session";
 import { showNotification } from "@/src/utils/notificationUtils";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { Link, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, View } from "react-native";
 import { ActivityIndicator, Button, Surface, Text } from "react-native-paper";
-import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
-export default function ClientSessionsScreen() {
+export default function CounselorSessionsScreen() {
   const { userData } = useAuth();
-  const [sessions, setSessions] = useState<SessionWithCounselor[] | null>(null);
+  const [sessions, setSessions] = useState<SessionWithClient[] | null>(null);
   const upcomingSessions = sessions
     ? sessions.filter((session) => session.status === "confirmed")
     : [];
@@ -30,7 +29,7 @@ export default function ClientSessionsScreen() {
       const fetchData = async () => {
         try {
           const result =
-            await sessionApi.getAllSessionsWithCounselorInfoByClientId(
+            await sessionApi.getAllSessionsWithUserDataByCounselorId(
               userData.id
             );
           setSessions(result);
@@ -63,7 +62,7 @@ export default function ClientSessionsScreen() {
           <Text variant="titleSmall">Upcoming sessions</Text>
           {upcomingSessions.length ? (
             upcomingSessions.map((session) => (
-              <SessionCard key={session.id} session={session} />
+              <CounselorSessionCard key={session.id} session={session} />
             ))
           ) : (
             <View style={{ marginVertical: 16, alignItems: "center" }}>
@@ -74,11 +73,6 @@ export default function ClientSessionsScreen() {
             </View>
           )}
         </Surface>
-        <Link href={"/(tabs)/client-sessions/counselor-list"} asChild>
-          <Button mode="contained" onPress={() => null}>
-            Schedule New Session
-          </Button>
-        </Link>
         {/*  */}
         <Surface
           style={{
@@ -89,7 +83,7 @@ export default function ClientSessionsScreen() {
           <Text variant="titleSmall">Waiting for approve sessions</Text>
           {pendingSessions.length ? (
             pendingSessions.map((session) => (
-              <SessionCard key={session.id} session={session} />
+              <CounselorSessionCard key={session.id} session={session} />
             ))
           ) : (
             <View style={{ marginVertical: 16, alignItems: "center" }}>
@@ -110,7 +104,7 @@ export default function ClientSessionsScreen() {
           <Text variant="titleSmall">Completed sessions</Text>
           {completedSessions.length ? (
             completedSessions.map((session) => (
-              <SessionCard key={session.id} session={session} />
+              <CounselorSessionCard key={session.id} session={session} />
             ))
           ) : (
             <View style={{ marginVertical: 16, alignItems: "center" }}>
