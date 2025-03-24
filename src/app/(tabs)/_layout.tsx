@@ -1,7 +1,7 @@
 import { HapticTab } from "@/src/components/HapticTab";
 import { useAuth } from "@/src/context/AuthProvider";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { router, Tabs, usePathname } from "expo-router";
+import { Tabs, usePathname } from "expo-router";
 import React, { useEffect } from "react";
 import { Platform } from "react-native";
 
