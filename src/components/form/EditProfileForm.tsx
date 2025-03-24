@@ -65,7 +65,12 @@ const ProfileSchema = z.object({
   name: z.string().min(1, "Name is required."),
   email: z.string().email("Invalid email format"),
   profileImage: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z
+    .string()
+    .regex(
+      /^((\+84|0)[3|5|7|8|9][0-9]{8})$/,
+      "Invalid Vietnamese phone number format"
+    ),
   relationshipStatus: z.enum([
     "Single",
     "In a Relationship",
