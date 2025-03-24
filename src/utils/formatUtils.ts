@@ -13,3 +13,12 @@ export function formatDate(date: Date): string {
     .replace(" AM", " AM")
     .replace(" PM", " PM");
 }
+
+export function formatShortDate(date: Date | string | number): string {
+  const d = new Date(date); // Ensure it's a Date object
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}

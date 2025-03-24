@@ -1,183 +1,214 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import { CounselorProfile } from "@/src/types/CounselorProfile";
+import { counselorApi } from "@/src/api/counselorApi";
+import { TruebondLightTheme } from "@/src/theme/theme";
+import { Counselor } from "@/src/types/Counselor";
+import { formatShortDate } from "@/src/utils/formatUtils";
 import { showNotification } from "@/src/utils/notificationUtils";
-import { getDocument, updateDocument } from "@/src/lib/firestore";
-import { ActivityIndicator } from "react-native-paper";
-import { UserData } from "@/src/types/User";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import {
+  ActivityIndicator,
+  Badge,
+  Button,
+  Chip,
+  Divider,
+  Surface,
+  Text,
+  useTheme,
+} from "react-native-paper";
 
 export default function DetailProfile() {
-  const { id } = useLocalSearchParams();
-  const [data, setData] = useState<CounselorProfile | null>(null);
-  const [user, setUser] = useState<UserData | null>(null);
+  const { id }: { id: string } = useLocalSearchParams();
+  const [counselor, setCounselor] = useState<Counselor | null>(null);
+  const theme = useTheme();
   const navigation = useNavigation();
 
   useEffect(() => {
-    const fetchProfileData = async () => {
+    const fetchcounselor = async () => {
       try {
-        const result = await getDocument<CounselorProfile>(
-          "counselorProfiles",
-          id as string
-        );
-        setData(result);
+        const result = await counselorApi.getCounselor(id);
+        setCounselor(result);
       } catch (error) {
         showNotification("error", "error!", String(error));
       }
     };
-    fetchProfileData();
+    fetchcounselor();
   }, []);
 
-  useEffect(() => {
-    if (!data) return;
+  const handleApprove = async () => {
+    if (!counselor) return;
 
-    const getUserProfile = async () => {
-      try {
-        const result = await getDocument<UserData>("users", data.userId);
-        setUser(result);
-      } catch (error) {
-        showNotification("error", "error!", String(error));
-      }
-    };
-    getUserProfile();
-  }, [data]);
-  console.log(user);
-
-  const handleAprrove = async () => {
     try {
-      if (!data || !user) return;
+      const response = await counselorApi.approveCounselor(counselor.id);
 
-      const response = await updateDocument<CounselorProfile>(
-        "counselorProfiles",
-        data?.id,
-        {
-          status: "approved",
-        }
+      showNotification(
+        "success",
+        "Approved successfully!",
+        `${counselor.name} is now a counselor`
       );
-
-      const res = await updateDocument<UserData>("users", user?.id, {
-        role: "counselor",
-      });
-
-      showNotification("success", "Approved successfully!", String(""));
       router.back();
     } catch (error) {
       showNotification("error", "error!", String(error));
     }
   };
 
-  const handleReject = async () => {
+  const handleDecline = async () => {
+    if (!counselor) return;
+
     try {
-      if (!data) return;
+      const response = await counselorApi.declineCounselor(counselor.id);
 
-      const response = await updateDocument<CounselorProfile>(
-        "counselorProfiles",
-        data?.id,
-        {
-          status: "declined",
-        }
+      showNotification(
+        "success",
+        "Declined successfully!",
+        `${counselor.name} application has been declined`
       );
-
-      showNotification("success", "Approved successfully!", String(response));
+      router.back();
     } catch (error) {
       showNotification("error", "error!", String(error));
     }
   };
 
-  if (!data || !user) {
+  if (!counselor) {
     return <ActivityIndicator />;
   }
 
   return (
     <ScrollView style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
+      <Surface
+        style={{ padding: 12, borderRadius: 12, gap: 16, marginBottom: 120 }}
       >
-        <Text style={styles.backText}>← Back</Text>
-      </TouchableOpacity>
-
-      <View style={styles.header}>
-        <Image source={{ uri: user?.profileImage }} style={styles.image} />
-        <View style={styles.headerInfo}>
-          <Text style={styles.name}>{user?.name}</Text>
-          <Text style={styles.status}>Gender: {user?.gender}</Text>
-          <Text style={styles.status}>Email: {user?.email}</Text>
-          <Text style={styles.status}>Phone: {user?.phone}</Text>
+        <View style={styles.header}>
+          <View style={{ flex: 3 }}>
+            <Image
+              source={{ uri: counselor?.profileImage }}
+              style={[styles.image, { backgroundColor: theme.colors.primary }]}
+            />
+          </View>
+          <View>
+            <Text variant="titleLarge">{counselor.name} application</Text>
+            <Text variant="bodyMedium">
+              Applied on: {formatShortDate(counselor?.createdAt)}
+            </Text>
+            <Text variant="bodyMedium">Name: {counselor?.name}</Text>
+            {/* <Text variant="bodyMedium">DoB: {counselor?.dateOfBirth}</Text> */}
+            <Text variant="bodyMedium">Gender: {counselor?.gender}</Text>
+            <Text variant="bodyMedium">Email: {counselor?.email}</Text>
+            <Text variant="bodyMedium">Phone: {counselor?.phone}</Text>
+            <Text variant="bodyMedium">
+              Relationship: {counselor?.relationshipStatus}
+            </Text>
+          </View>
         </View>
-      </View>
 
-      <View style={styles.detailsContainer}>
-        <Text style={styles.sectionTitle}>General Information</Text>
-        <Image
-          source={{ uri: data.certificateImageUrl }}
-          style={styles.cerImage}
-        />
-        <Text style={styles.detail}>Expertise: {data.expertise}</Text>
-        <Text style={styles.detail}>
-          Experience: {data.experienceYears} years
-        </Text>
-        <Text style={styles.detail}>Session Price: ${data.sessionPrice}</Text>
-        <Text style={styles.detail}>Bio: {data.bio}</Text>
-        <Text style={styles.status}>Status: {data.status}</Text>
-        <Text style={styles.rating}>⭐ {data.rating}/5</Text>
+        <Divider />
 
-        <Text style={styles.sectionTitle}>Availability</Text>
-        {data.availability.length > 0 ? (
-          data.availability.map((slot, index) => (
-            <View key={index} style={styles.availabilityContainer}>
-              <Text style={styles.day}>{slot.day}:</Text>
-              {slot.slots.length > 0 ? (
-                <View style={styles.slotList}>
-                  {slot.slots.map((time, i) => (
-                    <Text key={i} style={styles.slot}>
-                      {time}
-                    </Text>
-                  ))}
-                </View>
-              ) : (
-                <Text style={styles.noSlot}>No slots available</Text>
-              )}
-            </View>
-          ))
-        ) : (
-          <Text style={styles.noSlot}>No availability set</Text>
-        )}
+        <View>
+          <Text variant="titleMedium">Detail Information</Text>
+          <Text>Bio: {counselor.bio}</Text>
+          <Text>Expertise: {counselor.expertise}</Text>
+          <Text>Experience: {counselor.experienceYears} years</Text>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <Text>Application Status:</Text>
+            <Badge
+              style={{
+                backgroundColor:
+                  counselor.status === "approved"
+                    ? TruebondLightTheme.colors.success
+                    : counselor.status === "applying"
+                      ? TruebondLightTheme.colors.warning
+                      : TruebondLightTheme.colors.error,
+                paddingHorizontal: 12,
+              }}
+            >
+              {counselor.status}
+            </Badge>
+          </View>
+          <Text>Certificate:</Text>
+          <Image
+            source={{ uri: counselor.certificateImageUrl }}
+            style={{
+              width: "100%",
+              minHeight: 240,
+              objectFit: "cover",
+            }}
+          />
+        </View>
 
-        <Text style={styles.sectionTitle}>Created At</Text>
-        <Text style={styles.detail}>
-          {new Date(data.createdAt.seconds * 1000).toLocaleDateString()}
-        </Text>
-      </View>
+        <Divider />
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.rejectButton}>
-          <Text style={styles.buttonText} onPress={() => handleReject()}>
-            Reject
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.approveButton}>
-          <Text style={styles.buttonText} onPress={() => handleAprrove()}>
+        <View>
+          <Text variant="titleMedium">Session apply information</Text>
+          <Text>Applying price per session: {counselor.sessionPrice}$</Text>
+          <Text>Applying Time Slots:</Text>
+          <View
+            style={{
+              gap: 4,
+              marginTop: 8,
+            }}
+          >
+            {counselor.availability.length > 0 ? (
+              counselor.availability.map((slot, index) => (
+                <Surface
+                  elevation={2}
+                  mode="flat"
+                  key={index}
+                  style={{
+                    padding: 8,
+                    borderRadius: 8,
+                  }}
+                >
+                  <Text style={styles.day}>{slot.day}:</Text>
+                  {slot.slots.length > 0 ? (
+                    <View style={styles.slotList}>
+                      {slot.slots.map((time, i) => (
+                        <Chip key={time}>{time}</Chip>
+                      ))}
+                    </View>
+                  ) : (
+                    <Text style={styles.noSlot}>No slots available</Text>
+                  )}
+                </Surface>
+              ))
+            ) : (
+              <Text style={styles.noSlot}>No availability set</Text>
+            )}
+          </View>
+        </View>
+
+        <Divider/>
+
+        <View style={styles.buttonContainer}>
+          <Button
+            style={{ flex: 1, backgroundColor: theme.colors.errorContainer }}
+            onPress={() => handleDecline()}
+          >
+            Decline
+          </Button>
+          <Button
+            mode="contained"
+            style={{
+              flex: 1,
+              backgroundColor: TruebondLightTheme.colors.success,
+            }}
+            onPress={() => handleApprove()}
+          >
             Approve
-          </Text>
-        </TouchableOpacity>
-      </View>
+          </Button>
+        </View>
+      </Surface>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 15,
+    padding: 8,
+  },
+  header: {
+    flexDirection: "row",
+    gap: 12,
   },
   backButton: {
     marginBottom: 10,
@@ -186,33 +217,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#007bff",
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
-    marginBottom: 15,
-  },
   image: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    aspectRatio: 1,
+    width: "100%",
+    borderRadius: 10,
     marginRight: 15,
-  },
-  cerImage: {
-    width: 317,
-    height: 150,
-    borderRadius: 5,
-    marginRight: 15,
-  },
-  headerInfo: {
-    flex: 1,
   },
   name: {
     fontSize: 18,
@@ -225,16 +234,6 @@ const styles = StyleSheet.create({
   rating: {
     fontSize: 14,
     color: "#ffa500",
-  },
-  detailsContainer: {
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
   },
   sectionTitle: {
     fontSize: 16,
@@ -261,6 +260,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 5,
+    gap: 4,
   },
   slot: {
     backgroundColor: "#007bff",
@@ -278,21 +278,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 20,
-    padding: 10,
-  },
-  approveButton: {
-    backgroundColor: "#28a745",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  rejectButton: {
-    backgroundColor: "#dc3545",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+    marginTop: 8,
+    gap: 8,
   },
   buttonText: {
     color: "#fff",

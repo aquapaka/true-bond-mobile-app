@@ -3,8 +3,8 @@ import { TruebondLightTheme } from "@/src/theme/theme";
 import { Counselor } from "@/src/types/Counselor";
 import { showNotification } from "@/src/utils/notificationUtils";
 import { useNavigation } from "@react-navigation/native";
-import { Link } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { Link, useFocusEffect } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   FlatList,
   Image,
@@ -19,18 +19,20 @@ export default function AdminApprovalsScreen() {
   const [counselors, setCounselors] = useState<Counselor[]>([]);
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchProfileList = async () => {
-      try {
-        const result = await counselorApi.getAllCounselors();
-        setCounselors(result);
-      } catch (error) {
-        showNotification("error", "Error!", String(error));
-      }
-    };
+  useFocusEffect(
+    useCallback(() => {
+      const fetchProfileList = async () => {
+        try {
+          const result = await counselorApi.getAllCounselors();
+          setCounselors(result);
+        } catch (error) {
+          showNotification("error", "Error!", String(error));
+        }
+      };
 
-    fetchProfileList();
-  }, []);
+      fetchProfileList();
+    }, [])
+  );
 
   return (
     <FlatList

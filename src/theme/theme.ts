@@ -212,19 +212,16 @@ export const fontsForPaper = {
     fontFamily: "Taviraj-Regular",
     fontSize: 12,
     fontWeight: "400",
-    letterSpacing: 0.4,
   },
   bodyMedium: {
     fontFamily: "Taviraj-Regular",
     fontSize: 14,
     fontWeight: "400",
-    letterSpacing: 0.25,
   },
   bodyLarge: {
     fontFamily: "Taviraj-Regular",
     fontSize: 16,
     fontWeight: "400",
-    letterSpacing: 0.15,
   },
   default: {
     fontFamily: "Taviraj-Regular",
