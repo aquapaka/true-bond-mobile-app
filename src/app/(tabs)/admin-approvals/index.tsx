@@ -12,7 +12,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Badge, Surface, Text, useTheme } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Badge,
+  Surface,
+  Text,
+  useTheme,
+} from "react-native-paper";
 
 export default function AdminApprovalsScreen() {
   const theme = useTheme();
@@ -31,8 +37,15 @@ export default function AdminApprovalsScreen() {
       };
 
       fetchProfileList();
-    }, []),
+    }, [])
   );
+
+  if (!counselors)
+    return (
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
 
   return (
     <FlatList

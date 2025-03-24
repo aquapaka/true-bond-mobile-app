@@ -7,10 +7,7 @@ export default function AdminApprovalLayout() {
         name="index"
         options={{ title: "Approve counselor requests" }}
       />
-      <Stack.Screen
-        name="detail"
-        options={{ title: "Approve counselor profile" }}
-      />
+      <Stack.Screen name="detail/[id]" options={{ title: "Profile" }} />
     </Stack>
   );
 }

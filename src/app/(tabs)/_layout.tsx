@@ -115,7 +115,10 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="home-analytics" size={size} color={color} />
           ),
-          href: true || userData?.role === "admin" ? "/admin-dashboard" : null,
+          href:
+            true || userData?.role === "admin"
+              ? "/(tabs)/admin-dashboard"
+              : null,
         }}
       />
       <Tabs.Screen
