@@ -14,13 +14,12 @@ export default function ScheduleNewSessionScreen() {
       const data = await counselorApi.getAllCounselors();
       setCounselors(data);
       console.log(data);
-
-    }
+    };
 
     fetchData();
-  }, [])
+  }, []);
 
-  if(!counselors) {
+  if (!counselors) {
     return;
   }
 

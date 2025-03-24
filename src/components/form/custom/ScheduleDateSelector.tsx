@@ -54,7 +54,7 @@ const SessionDatePicker: React.FC<SessionDatePickerProps> = ({
     setSelectedTime(slot);
 
     const selectedDayData = nextAvailableDays.find(
-      (d) => d.day === selectedDay
+      (d) => d.day === selectedDay,
     );
     if (!selectedDayData) return;
 

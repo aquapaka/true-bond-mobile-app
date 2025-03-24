@@ -7,7 +7,7 @@ export function showNotification(
   title: string,
   description: string,
   onHidden?: () => void,
-  onPress?: () => void
+  onPress?: () => void,
 ) {
   Notifier.showNotification({
     title: title,
@@ -18,7 +18,7 @@ export function showNotification(
     onPress: () => onPress,
     componentProps: {
       titleStyle: {
-        color: 'black'
+        color: "black",
       },
       containerStyle: {
         backgroundColor:

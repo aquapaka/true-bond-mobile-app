@@ -33,7 +33,7 @@ export default function CounselorListScreen() {
         {counselors
           .filter(
             (counselor) =>
-              counselor.role === "counselor" && counselor.status === "approved"
+              counselor.role === "counselor" && counselor.status === "approved",
           )
           .map((counselor) => (
             <CounselorCard key={counselor.id} counselor={counselor} />

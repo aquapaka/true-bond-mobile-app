@@ -45,7 +45,7 @@ export default function DetailProfile() {
       showNotification(
         "success",
         "Approved successfully!",
-        `${counselor.name} is now a counselor`
+        `${counselor.name} is now a counselor`,
       );
       router.back();
     } catch (error) {
@@ -62,7 +62,7 @@ export default function DetailProfile() {
       showNotification(
         "success",
         "Declined successfully!",
-        `${counselor.name} application has been declined`
+        `${counselor.name} application has been declined`,
       );
       router.back();
     } catch (error) {
@@ -177,7 +177,7 @@ export default function DetailProfile() {
           </View>
         </View>
 
-        <Divider/>
+        <Divider />
 
         <View style={styles.buttonContainer}>
           <Button

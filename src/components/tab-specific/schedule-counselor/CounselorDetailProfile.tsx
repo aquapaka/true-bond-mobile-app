@@ -1,6 +1,12 @@
 import { TruebondLightTheme } from "@/src/theme/theme";
 import { Image, View } from "react-native";
-import { Surface, Divider, Text, useTheme, ActivityIndicator } from "react-native-paper";
+import {
+  Surface,
+  Divider,
+  Text,
+  useTheme,
+  ActivityIndicator,
+} from "react-native-paper";
 import RatingOverview from "../../feedbacks/RatingOverview";
 import ReviewsSection from "../../feedbacks/ReviewsSection";
 import { Counselor } from "@/src/types/Counselor";
@@ -26,7 +32,7 @@ export function CounselorDetailProfile({
       try {
         setLoading(true);
         const fetchedReviews = await reviewApi.getReviewsByCounselorId(
-          counselor.id
+          counselor.id,
         );
         setReviews(fetchedReviews);
       } catch (error) {
@@ -39,16 +45,15 @@ export function CounselorDetailProfile({
     fetchReviews();
   }, [counselor.id]);
 
-  if (loading) return (
-    <View style={{ flex: 1, justifyContent: "center" }}>
-      <ActivityIndicator />
-    </View>
-  );
+  if (loading)
+    return (
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
 
   return (
-    <Surface
-      style={{ padding: 12, borderRadius: 12, gap: 16 }}
-    >
+    <Surface style={{ padding: 12, borderRadius: 12, gap: 16 }}>
       <View style={{ flexDirection: "row" }}>
         <View style={{ flex: 3 }}>
           <Image

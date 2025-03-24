@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       console.log(
         "🔄 Auth state changed inside auth provider:",
-        firebaseUser?.email
+        firebaseUser?.email,
       );
       setUser(firebaseUser);
 

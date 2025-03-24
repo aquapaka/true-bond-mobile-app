@@ -1,6 +1,6 @@
 import { BookingSlot, TimeSlot, Weekday } from "@/src/types/CounselorProfile";
 import React, { useState } from "react";
-import { View} from "react-native";
+import { View } from "react-native";
 import { Chip, Text, useTheme } from "react-native-paper";
 
 // Props for available slots
@@ -22,7 +22,7 @@ const AvailabilitySelector: React.FC<AvailabilitySelectorProps> = ({
       acc[day] = new Set(slots);
       return acc;
     },
-    {} as Record<Weekday, Set<TimeSlot>>
+    {} as Record<Weekday, Set<TimeSlot>>,
   );
 
   const [selectedDays, setSelectedDays] = useState<
@@ -50,7 +50,7 @@ const AvailabilitySelector: React.FC<AvailabilitySelectorProps> = ({
         Object.entries(newSelection).map(([key, value]) => ({
           day: key as Weekday,
           slots: value || [],
-        }))
+        })),
       );
 
       return newSelection;

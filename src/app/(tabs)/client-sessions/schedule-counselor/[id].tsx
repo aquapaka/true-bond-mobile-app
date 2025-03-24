@@ -48,7 +48,7 @@ export default function SchedulateCounselorScreen() {
       try {
         const result = await sessionApi.getActiveSession(
           userData?.id,
-          counselor?.id
+          counselor?.id,
         );
         setActiveSession(result);
       } catch (error) {
@@ -68,13 +68,13 @@ export default function SchedulateCounselorScreen() {
         "",
         selectedDate,
         "note",
-        counselor.sessionPrice
+        counselor.sessionPrice,
       );
 
       showNotification(
         "success",
         "Your schedule information has been sent!",
-        `Waiting for ${counselor.name} to apply`
+        `Waiting for ${counselor.name} to apply`,
       );
       router.navigate("/(tabs)/client-sessions");
     } catch (error) {

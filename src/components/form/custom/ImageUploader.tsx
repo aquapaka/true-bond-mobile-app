@@ -24,7 +24,7 @@ export default function ImageUploader({
       showNotification(
         "info",
         "Permission Required",
-        "Please allow access to your gallery."
+        "Please allow access to your gallery.",
       );
       return;
     }
@@ -69,9 +69,9 @@ export default function ImageUploader({
           showNotification(
             "success",
             "Upload Complete",
-            "Your image has been uploaded."
+            "Your image has been uploaded.",
           );
-        }
+        },
       );
     } catch (error) {
       setUploading(false);
@@ -87,7 +87,9 @@ export default function ImageUploader({
           style={{ width: 200, height: 200, borderRadius: 10 }}
         />
       ) : (
-        <Text variant="labelSmall">{uploading ? "Uploading..." : "No Image Selected"}</Text>
+        <Text variant="labelSmall">
+          {uploading ? "Uploading..." : "No Image Selected"}
+        </Text>
       )}
 
       {uploading ? (

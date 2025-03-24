@@ -29,7 +29,7 @@ import { router } from "expo-router";
 registerTranslation("en-GB", enGB);
 
 function parseFirestoreTimestamp(
-  value?: { seconds: number; nanoseconds: number } | string | null
+  value?: { seconds: number; nanoseconds: number } | string | null,
 ): Date {
   if (!value) return new Date();
 
@@ -153,7 +153,7 @@ export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
       showNotification(
         "success",
         "Profile updated",
-        "Your profile has been successfully updated."
+        "Your profile has been successfully updated.",
       );
       router.back();
     } catch (error) {

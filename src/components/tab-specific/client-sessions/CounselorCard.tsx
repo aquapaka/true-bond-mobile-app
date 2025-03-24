@@ -13,7 +13,7 @@ export default function CounselorCard({ counselor }: { counselor: Counselor }) {
       onPress={() =>
         router.push(
           // @ts-ignore
-          `/(tabs)/client-sessions/schedule-counselor/${counselor.id}`
+          `/(tabs)/client-sessions/schedule-counselor/${counselor.id}`,
         )
       }
     >
