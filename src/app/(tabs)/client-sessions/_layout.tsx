@@ -5,8 +5,12 @@ export default function ClientSessionLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ title: "Sessions" }} />
       <Stack.Screen
-        name="schedule-new-session"
-        options={{ title: "Schedule New Session" }}
+        name="counselor-list"
+        options={{ title: "Find a counselor" }}
+      />
+      <Stack.Screen
+        name="schedule-counselor/[id]"
+        options={{ title: "Schedule" }}
       />
     </Stack>
   );

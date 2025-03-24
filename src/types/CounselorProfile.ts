@@ -51,6 +51,8 @@ export interface CounselorProfile {
   bio: string; // Short introduction
   expertise: string; // Areas of expertise (e.g., ["communication", "finance"])
   experienceYears: number;
+  educationDetails: string;
+  experienceDetails: string;
   certificateImageUrl: string;
   sessionPrice: number;
   availability: BookingSlot[];
