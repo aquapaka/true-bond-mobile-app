@@ -7643,6 +7643,13 @@ react-native-notifier@^2.0.0:
   resolved "https://registry.npmjs.org/react-native-notifier/-/react-native-notifier-2.0.0.tgz"
   integrity sha512-CKaoldBM2Lz9FIWn1frUZ70R8n1jCwaUsO4hGfqbNYFUZLV4OYy/UeEicWvrLy3Ce8fEg7WyYWVd0q+crsFQlA==
 
+react-native-paper-dates@^0.22.38:
+  version "0.22.38"
+  resolved "https://registry.npmjs.org/react-native-paper-dates/-/react-native-paper-dates-0.22.38.tgz"
+  integrity sha512-CohqGdM/whd1X1JFnrqOrLwsoFbt8KMwJz9doJxMQAKXaFajcLhtrHd1PFRQHkpRzahKesiM1HP/FAM0wxhgjw==
+  dependencies:
+    color "^4.2.3"
+
 react-native-paper@^5.13.1:
   version "5.13.1"
   resolved "https://registry.npmjs.org/react-native-paper/-/react-native-paper-5.13.1.tgz"

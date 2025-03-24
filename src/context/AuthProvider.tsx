@@ -1,5 +1,5 @@
 import { signOut as firebaseSignOut, User } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth, database } from "../lib/firebase";
 import { UserData } from "../types/User";
@@ -9,6 +9,7 @@ interface AuthContextType {
   userData: UserData | null; // Firestore user document
   loading: boolean;
   signOut: () => Promise<void>;
+  updateUser: (updates: Partial<UserData>) => Promise<void>; // <--- Hàm mới
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -57,14 +58,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUserData(null);
   }
 
+  // --- Hàm cập nhật UserData ---
+  async function updateUser(updates: Partial<UserData>): Promise<void> {
+    if (!user) {
+      throw new Error("No user is currently logged in.");
+    }
+
+    // Gọi Firestore update
+    const docRef = doc(database, "users", user.uid);
+    await updateDoc(docRef, updates);
+
+    // Cập nhật state userData tại chỗ (để UI không cần reload)
+    setUserData((prev) => {
+      if (!prev) return null;
+      return { ...prev, ...updates };
+    });
+  }
+
   return (
-    <AuthContext.Provider value={{ user, userData, loading, signOut }}>
+    <AuthContext.Provider
+      value={{ user, userData, loading, signOut, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Hook to access auth context
+// Hook access AuthContext
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

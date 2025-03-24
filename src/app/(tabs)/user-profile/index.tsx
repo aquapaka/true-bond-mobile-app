@@ -1,71 +1,201 @@
 import React from "react";
-import { SafeAreaView, View, Image, StyleSheet } from "react-native";
-import { Button, Text, List, Avatar } from "react-native-paper";
+import { SafeAreaView, View, StyleSheet, ScrollView } from "react-native";
+import {
+  Button,
+  Text,
+  List,
+  Avatar,
+  Card,
+  Divider,
+  useTheme,
+  IconButton,
+} from "react-native-paper";
 import { Link } from "expo-router";
 import { useAuth } from "@/src/context/AuthProvider";
+import { StatusBar } from "expo-status-bar";
 
 export default function ProfileScreen() {
   const { signOut, userData } = useAuth();
+  const theme = useTheme();
 
   async function onLogoutPress() {
     await signOut();
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Profile Picture and Name */}
-      <View style={styles.profileHeader}>
-        <Avatar.Image
-          size={120}
-          source={{ uri: userData?.profileImage || "" }}
-        />
-        <Text variant="titleLarge" style={styles.userName}>
-          {userData?.name || "User Name"}
-        </Text>
-        <Text variant="bodyMedium" style={styles.userHandle}>
-          {userData?.email ? userData.email : "username"}
-        </Text>
-        <Link href={"/(tabs)/user-profile/edit-profile"} asChild>
-          <Button mode="contained" onPress={() => null}>
-            Edit profile
-          </Button>
-        </Link>
-      </View>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <StatusBar style="auto" />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Profile Card */}
+        <Card style={styles.profileCard} elevation={2}>
+          <Card.Content style={styles.profileInfo}>
+            <View style={styles.avatarContainer}>
+              {userData?.profileImage ? (
+                <Avatar.Image
+                  size={100}
+                  source={{ uri: userData.profileImage }}
+                  style={styles.avatar}
+                />
+              ) : (
+                <Avatar.Icon
+                  size={100}
+                  icon="account"
+                  style={[
+                    styles.avatar,
+                    { backgroundColor: theme.colors.primary },
+                  ]}
+                />
+              )}
+            </View>
 
-      {/* Menu List */}
-      <View style={styles.menuList}>
-        <List.Item
-          title="Settings"
-          left={() => <List.Icon icon="cog" />}
-          right={() => <List.Icon icon="chevron-right" />}
-        />
-        <List.Item
-          title="Billing Details"
-          left={() => <List.Icon icon="credit-card" />}
-          right={() => <List.Icon icon="chevron-right" />}
-        />
-        <List.Item
-          title="User Management"
-          left={() => <List.Icon icon="account-group" />}
-          right={() => <List.Icon icon="chevron-right" />}
-        />
-        <List.Item
-          title="Information"
-          left={() => <List.Icon icon="information" />}
-          right={() => <List.Icon icon="chevron-right" />}
-        />
-        <List.Item
-          title="Log out"
-          left={() => <List.Icon icon="logout" />}
-          onPress={onLogoutPress}
-        />
-        <Text>Profile Screen</Text>
-      </View>
-      <Link href={"/(tabs)/user-profile/become-counselor"} asChild>
-        <Button mode="contained" onPress={() => null}>
-          Apply to be counselor
-        </Button>
-      </Link>
+            <Text variant="headlineSmall" style={styles.userName}>
+              {userData?.name || "User Name"}
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={[styles.userHandle, { color: theme.colors.outline }]}
+            >
+              {userData?.email || "email@example.com"}
+            </Text>
+
+            <Link href={"/(tabs)/user-profile/edit-profile"} asChild>
+              <Button
+                mode="contained"
+                style={[
+                  styles.editProfileButton,
+                  { backgroundColor: theme.colors.primary },
+                ]}
+                icon="account-edit"
+              >
+                Edit Profile
+              </Button>
+            </Link>
+          </Card.Content>
+        </Card>
+
+        {/* Menu List */}
+        <Card style={styles.menuCard} elevation={2}>
+          <Card.Title
+            title="Account Settings"
+            titleStyle={{ color: theme.colors.primary }}
+          />
+          <Card.Content style={styles.menuList}>
+            <List.Item
+              title="Settings"
+              description="App preferences and notifications"
+              left={(props) => (
+                <List.Icon {...props} icon="cog" color={theme.colors.primary} />
+              )}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              style={styles.listItem}
+              titleStyle={styles.listItemTitle}
+              descriptionStyle={styles.listItemDescription}
+            />
+            <Divider />
+            <List.Item
+              title="Billing Details"
+              description="Manage your payment methods"
+              left={(props) => (
+                <List.Icon
+                  {...props}
+                  icon="credit-card"
+                  color={theme.colors.primary}
+                />
+              )}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              style={styles.listItem}
+              titleStyle={styles.listItemTitle}
+              descriptionStyle={styles.listItemDescription}
+            />
+            <Divider />
+            <List.Item
+              title="User Management"
+              description="Manage your account settings"
+              left={(props) => (
+                <List.Icon
+                  {...props}
+                  icon="account-group"
+                  color={theme.colors.primary}
+                />
+              )}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              style={styles.listItem}
+              titleStyle={styles.listItemTitle}
+              descriptionStyle={styles.listItemDescription}
+            />
+            <Divider />
+            <List.Item
+              title="Information"
+              description="About the app and help"
+              left={(props) => (
+                <List.Icon
+                  {...props}
+                  icon="information"
+                  color={theme.colors.primary}
+                />
+              )}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              style={styles.listItem}
+              titleStyle={styles.listItemTitle}
+              descriptionStyle={styles.listItemDescription}
+            />
+            <Divider />
+            <List.Item
+              title="Log out"
+              description="Sign out from your account"
+              left={(props) => (
+                <List.Icon
+                  {...props}
+                  icon="logout"
+                  color={theme.colors.error}
+                />
+              )}
+              onPress={onLogoutPress}
+              style={styles.listItem}
+              titleStyle={[styles.listItemTitle, { color: theme.colors.error }]}
+              descriptionStyle={styles.listItemDescription}
+            />
+          </Card.Content>
+        </Card>
+
+        {/* Counselor Application */}
+        <Card style={styles.counselorCard} elevation={2}>
+          <Card.Title
+            title="Become a Counselor"
+            titleStyle={{ color: theme.colors.primary }}
+            subtitle="Help others with your expertise"
+            left={(props) => (
+              <Avatar.Icon
+                {...props}
+                icon="heart"
+                size={40}
+                style={{ backgroundColor: theme.colors.primaryContainer }}
+              />
+            )}
+          />
+          <Card.Content>
+            <Text variant="bodyMedium" style={styles.counselorText}>
+              Share your knowledge and experience by becoming a counselor on our
+              platform.
+            </Text>
+            <Link href={"/(tabs)/user-profile/become-counselor"} asChild>
+              <Button
+                mode="contained-tonal"
+                style={[
+                  styles.counselorButton,
+                  { backgroundColor: theme.colors.primaryContainer },
+                ]}
+                labelStyle={{ color: theme.colors.primary }}
+                icon="account-tie"
+              >
+                Apply to be a Counselor
+              </Button>
+            </Link>
+          </Card.Content>
+        </Card>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -73,24 +203,83 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f2f2f2",
-    padding: 20,
+    padding: 16,
   },
-  profileHeader: {
+  profileCard: {
+    marginBottom: 16,
+    overflow: "hidden",
+  },
+  avatarContainer: {
     alignItems: "center",
-    marginBottom: 30,
+    position: "relative",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  avatar: {
+    borderWidth: 2,
+    borderColor: "white",
+  },
+  editAvatarButton: {
+    position: "absolute",
+    bottom: 0,
+    right: "35%",
+  },
+  profileInfo: {
+    alignItems: "center",
+    paddingVertical: 16,
   },
   userName: {
-    marginTop: 10,
     fontWeight: "bold",
+    marginTop: 16,
   },
   userHandle: {
-    color: "#888",
+    marginBottom: 16,
+  },
+  statsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+    marginVertical: 16,
+    paddingHorizontal: 16,
+  },
+  statItem: {
+    alignItems: "center",
+    flex: 1,
+  },
+  statDivider: {
+    height: "100%",
+    width: 1,
   },
   editProfileButton: {
-    marginTop: 15,
+    marginTop: 16,
+    paddingVertical: 6,
+    width: "80%",
+  },
+  menuCard: {
+    marginBottom: 16,
   },
   menuList: {
-    width: "100%",
+    padding: 0,
+  },
+  listItem: {
+    paddingVertical: 12,
+  },
+  listItemTitle: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  listItemDescription: {
+    fontSize: 12,
+  },
+  counselorCard: {
+    marginBottom: 24,
+  },
+  counselorText: {
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  counselorButton: {
+    marginTop: 8,
+    paddingVertical: 6,
   },
 });

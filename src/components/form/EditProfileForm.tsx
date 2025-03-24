@@ -1,24 +1,70 @@
-import { useAuth } from "@/src/context/AuthProvider";
-import { updateDocument } from "@/src/lib/firestore";
-import { UserData } from "@/src/types/User";
-import { showNotification } from "@/src/utils/notificationUtils";
-import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
+import { StyleSheet, View, ScrollView } from "react-native";
+import {
+  Button,
+  HelperText,
+  Text,
+  TextInput,
+  useTheme,
+  Surface,
+  Card,
+  Title,
+} from "react-native-paper";
+import { Picker } from "@react-native-picker/picker";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, View } from "react-native";
-import { Button, HelperText, Text, TextInput } from "react-native-paper";
-import { Picker } from '@react-native-picker/picker';
-import { date, z } from "zod";
-import ImageUploader from "./custom/ImageUploader";
-import DatePicker from "react-native-date-picker";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-// Validation schema for user profile
-// TODO: Validate those data properly
+import { UserData } from "@/src/types/User";
+import { useAuth } from "@/src/context/AuthProvider";
+import { showNotification } from "@/src/utils/notificationUtils";
+
+import ImageUploader from "./custom/ImageUploader";
+
+import { DatePickerModal } from "react-native-paper-dates";
+import { enGB, registerTranslation } from "react-native-paper-dates";
+registerTranslation("en-GB", enGB);
+
+
+function parseFirestoreTimestamp(
+  value?: { seconds: number; nanoseconds: number } | string | null
+): Date {
+  if (!value) return new Date();
+
+  //  Firestore timestamp object
+  if (
+    typeof value === "object" &&
+    "seconds" in value &&
+    "nanoseconds" in value
+  ) {
+    return new Date(value.seconds * 1000 + value.nanoseconds / 1_000_000);
+  }
+
+  //  ISO string
+  if (typeof value === "string") {
+    try {
+      const date = new Date(value);
+      
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    } catch (error) {
+      console.error("Error parsing date string:", error);
+    }
+  }
+
+ 
+  return new Date();
+}
+
+/**
+ * Validation schema Zod.
+ */
 const ProfileSchema = z.object({
-  name: z.string().min(1, "Username is required."),
-  email: z.string(),
-  profileImage: z.string(),
-  phone: z.string(),
+  name: z.string().min(1, "Name is required."),
+  email: z.string().email("Invalid email format"),
+  profileImage: z.string().optional(),
+  phone: z.string().optional(),
   relationshipStatus: z.enum([
     "Single",
     "In a Relationship",
@@ -36,39 +82,73 @@ type ProfileFormData = Omit<
   "id" | "createdAt" | "updatedAt" | "role" | "counselorProfileId"
 >;
 
-// TODO: Add missing input fields
 export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
-  const { user, userData } = useAuth();
+  const { userData, updateUser } = useAuth(); 
+  const theme = useTheme();
   const [loading, setLoading] = useState(false);
+  const [openDatePicker, setOpenDatePicker] = useState(false);
+
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     reset,
+    watch,
   } = useForm<ProfileFormData>({
     resolver: zodResolver(ProfileSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      profileImage: "",
+      phone: "",
+      relationshipStatus: "Prefer Not to Say",
+      dateOfBirth: new Date(),
+      gender: "Other",
+    },
   });
 
-  // Handle form submission
-  const onSubmit = async (data: any) => {
+  const dateOfBirth = watch("dateOfBirth");
+
+  useEffect(() => {
+    if (userData) {
+      reset({
+        name: userData.name ?? "",
+        email: userData.email ?? "",
+        profileImage: userData.profileImage ?? "",
+        phone: userData.phone ?? "",
+        relationshipStatus: userData.relationshipStatus ?? "Prefer Not to Say",
+        // Firestore Timestamp => Date:
+        dateOfBirth: parseFirestoreTimestamp(userData.dateOfBirth),
+        gender: userData.gender ?? "Other",
+      });
+    }
+  }, [userData, reset]);
+
+  // format Date => text
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+  // Handle submit
+  const onSubmit = async (formValues: ProfileFormData) => {
     try {
       setLoading(true);
 
-      const updatedProfile = {
-        ...data,
-        updatedAt: new Date(),
+      const updatedProfile: Partial<UserData> = {
+        ...formValues,
+
+        dateOfBirth: formValues.dateOfBirth.toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       console.log("Updated profile data:", updatedProfile);
 
-      await updateDocument<UserData>(
-        "users",
-        userData?.id ?? "",
-        updatedProfile
-      );
 
-      // Reset form after successful update
-      reset();
+      await updateUser(updatedProfile);
+
       setLoading(false);
       showNotification(
         "success",
@@ -81,184 +161,276 @@ export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
     }
   };
 
-  useEffect(() => {
-    if (userData) {
-      reset({
-        name: userData.name || "No name",
-        email: userData.email || "example@gmail.com",
-        profileImage: userData.profileImage || "",
-        dateOfBirth: userData.dateOfBirth || new Date(),
-        gender: userData.gender || "Other",
-        phone: userData.phone || "",
-        relationshipStatus: userData.relationshipStatus || "Prefer Not to Say",
-      });
-    }
-  }, [userData, user, reset]);
-
-  function dateFormat(value: Date, arg1: string): string | undefined {
-    throw new Error("Function not implemented.");
-  }
-
   return (
-    <View style={styles.container}>
-      <Text variant="titleLarge">Edit Profile {userData?.id}</Text>
+    <ScrollView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      keyboardShouldPersistTaps="handled"
+    >
+     
+      <Surface
+        style={[styles.surface, { backgroundColor: theme.colors.surface }]}
+      >
+       
+        <Card style={styles.card}>
+          <Card.Content>
+            <Title style={[styles.title, { color: theme.colors.primary }]}>
+              {isEditing ? "Edit Profile" : "Create Profile"}
+            </Title>
+            <Text variant="bodySmall" style={{ marginBottom: 10 }}>
+              ID: {userData?.id}
+            </Text>
 
-
-      {/* Profile Image Field */}
-      <Text variant="labelLarge">Profile Image</Text>
-      <Controller
-        control={control}
-        name="profileImage"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <ImageUploader value={value} onChange={onChange} onBlur={onBlur} />
-        )}
-      />
-      <HelperText type="error" visible={!!errors.profileImage}>
-        {errors.profileImage?.message}
-      </HelperText>
-      {/* Username Field */}
-      <Controller
-        control={control}
-        name="name"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            mode="outlined"
-            label="Name"
-            placeholder="Enter your name"
-            value={value}
-            onBlur={onBlur}
-            onChangeText={onChange}
-          />
-        )}
-      />
-      <HelperText type="error" visible={!!errors.name}>
-        {errors.name?.message}
-      </HelperText>
-      {/* Phone Field */}
-      <Controller
-        control={control}
-        name="phone"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            mode="outlined"
-            label="Phone"
-            placeholder="Enter your phone number"
-            value={value}
-            onBlur={onBlur}
-            onChangeText={onChange}
-          />
-        )}
-      />
-      <HelperText type="error" visible={!!errors.phone}>
-        {errors.phone?.message}
-      </HelperText>
-
-      {/* Relationship Status Field */}
-      <Controller
-        control={control}
-        name="relationshipStatus"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <Picker
-            selectedValue={value}
-            onValueChange={onChange}
-            onBlur={onBlur}
-          >
-            <Picker.Item label="Single" value="Single" />
-            <Picker.Item label="In a Relationship" value="In a Relationship" />
-            <Picker.Item label="Engaged" value="Engaged" />
-            <Picker.Item label="Married" value="Married" />
-            <Picker.Item label="It's Complicated" value="It's Complicated" />
-            <Picker.Item
-              label="Prefer Not to Say"
-              value="Prefer Not to Say"
+            {/* Profile Image */}
+            <Text variant="labelLarge" style={{ marginTop: 10 }}>
+              Profile Image
+            </Text>
+            <Controller
+              control={control}
+              name="profileImage"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <ImageUploader
+                  value={value}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                />
+              )}
             />
-          </Picker>
-        )}
-      />
-      <HelperText type="error" visible={!!errors.relationshipStatus}>
-        {errors.relationshipStatus?.message}
-      </HelperText>
+            <HelperText type="error" visible={!!errors.profileImage}>
+              {errors.profileImage?.message}
+            </HelperText>
 
-      {/* Date of Birth Field */}
-      {/* <Controller
-        control={control}
-        name="dateOfBirth"
-        render={({ field: { onChange, value } }) => (
-          <DatePicker
-            style={styles.datePicker}
-            onDateChange={(date: any) => onChange(date)}
-            date={value} // Use date instead of value
-            mode="date"
-            label="Date of Birth"
-            placeholder="Enter your date of birth"
-            format="yyyy-MM-dd"
-          />
-        )}
-      />
-      <HelperText type="error" visible={!!errors.dateOfBirth}>
-        {errors.dateOfBirth?.message}
-      </HelperText> */}
+            {/* Name */}
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  mode="outlined"
+                  label="Name"
+                  placeholder="Enter your name"
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  style={styles.input}
+                  left={<TextInput.Icon icon="account" />}
+                />
+              )}
+            />
+            <HelperText type="error" visible={!!errors.name}>
+              {errors.name?.message}
+            </HelperText>
 
-        {/* Gender Field */}
-        <Controller
-          control={control}
-          name="gender"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <Picker
-              selectedValue={value}
-              onValueChange={onChange}
-              onBlur={onBlur}
+            {/* Phone */}
+            <Controller
+              control={control}
+              name="phone"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  mode="outlined"
+                  label="Phone"
+                  placeholder="Enter your phone number"
+                  value={value || ""}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  style={styles.input}
+                  left={<TextInput.Icon icon="phone" />}
+                  keyboardType="phone-pad"
+                />
+              )}
+            />
+            <HelperText type="error" visible={!!errors.phone}>
+              {errors.phone?.message}
+            </HelperText>
+
+            {/* Relationship Status */}
+            <Text variant="labelLarge" style={{ marginTop: 10 }}>
+              Relationship Status
+            </Text>
+            <Controller
+              control={control}
+              name="relationshipStatus"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View
+                  style={[
+                    styles.pickerContainer,
+                    { borderColor: theme.colors.outline },
+                  ]}
+                >
+                  <Picker
+                    selectedValue={value}
+                    onValueChange={onChange}
+                    onBlur={onBlur}
+                  >
+                    <Picker.Item label="Single" value="Single" />
+                    <Picker.Item
+                      label="In a Relationship"
+                      value="In a Relationship"
+                    />
+                    <Picker.Item label="Engaged" value="Engaged" />
+                    <Picker.Item label="Married" value="Married" />
+                    <Picker.Item
+                      label="It's Complicated"
+                      value="It's Complicated"
+                    />
+                    <Picker.Item
+                      label="Prefer Not to Say"
+                      value="Prefer Not to Say"
+                    />
+                  </Picker>
+                </View>
+              )}
+            />
+            <HelperText type="error" visible={!!errors.relationshipStatus}>
+              {errors.relationshipStatus?.message}
+            </HelperText>
+
+            {/* Date of Birth */}
+            <Text variant="labelLarge" style={{ marginTop: 10 }}>
+              Date of Birth
+            </Text>
+            <Controller
+              control={control}
+              name="dateOfBirth"
+              render={({ field: { onChange, value } }) => (
+                <>
+                  <Button
+                    mode="outlined"
+                    onPress={() => setOpenDatePicker(true)}
+                    style={{ marginTop: 5 }}
+                    icon="calendar"
+                  >
+                    {formatDate(value)}
+                  </Button>
+                  <DatePickerModal
+                    locale="en-GB"
+                    mode="single"
+                    visible={openDatePicker}
+                    onDismiss={() => setOpenDatePicker(false)}
+                    date={value}
+                    onConfirm={({ date }) => {
+                      setOpenDatePicker(false);
+                      if (date) onChange(date);
+                    }}
+                    saveLabel="Confirm"
+                    label="Select date of birth"
+                    animationType="slide"
+                    presentationStyle="pageSheet"
+                    validRange={{
+                      startDate: new Date(1900, 0, 1),
+                      endDate: new Date(),
+                    }}
+                  />
+                </>
+              )}
+            />
+            <HelperText type="error" visible={!!errors.dateOfBirth}>
+              {errors.dateOfBirth?.message}
+            </HelperText>
+
+            {/* Gender */}
+            <Text variant="labelLarge" style={{ marginTop: 10 }}>
+              Gender
+            </Text>
+            <Controller
+              control={control}
+              name="gender"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View
+                  style={[
+                    styles.pickerContainer,
+                    { borderColor: theme.colors.outline },
+                  ]}
+                >
+                  <Picker
+                    selectedValue={value}
+                    onValueChange={onChange}
+                    onBlur={onBlur}
+                  >
+                    <Picker.Item label="Male" value="Male" />
+                    <Picker.Item label="Female" value="Female" />
+                    <Picker.Item label="Other" value="Other" />
+                  </Picker>
+                </View>
+              )}
+            />
+            <HelperText type="error" visible={!!errors.gender}>
+              {errors.gender?.message}
+            </HelperText>
+
+            {/* Email  */}
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  mode="outlined"
+                  label="Email"
+                  value={value}
+                  editable={false}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  style={[
+                    styles.input,
+                    { backgroundColor: theme.colors.surfaceDisabled },
+                  ]}
+                  left={<TextInput.Icon icon="email" />}
+                />
+              )}
+            />
+            <HelperText type="error" visible={!!errors.email}>
+              {errors.email?.message}
+            </HelperText>
+
+            {/* Submit Button */}
+            <Button
+              mode="contained"
+              onPress={handleSubmit(onSubmit)}
+              loading={loading}
+              style={[
+                styles.submitButton,
+                { backgroundColor: theme.colors.primary },
+              ]}
+              icon="content-save"
             >
-              <Picker.Item label="Male" value="Male" />
-              <Picker.Item label="Female" value="Female" />
-              <Picker.Item label="Other" value="Other" />
-            </Picker>
-          )}
-        />
-        <HelperText type="error" visible={!!errors.gender}>
-          {errors.gender?.message}
-        </HelperText>
-
-        {/* Email Field */}
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              mode="outlined"
-              label="Email"
-              value={value}
-              editable={false} // Email is not editable
-              onBlur={onBlur}
-              onChangeText={onChange}
-            />
-          )}
-        />
-        <HelperText type="error" visible={!!errors.email}>
-          {errors.email?.message}
-        </HelperText>
-
-        {/* Submit Button */}
-        <Button
-          mode="contained"
-          onPress={handleSubmit(onSubmit)}
-          loading={loading}
-        >
-          {isEditing ? "Update Profile" : "Create Profile"}
-        </Button>
-    </View>
+              {isEditing ? "Update Profile" : "Create Profile"}
+            </Button>
+          </Card.Content>
+        </Card>
+      </Surface>
+    </ScrollView>
   );
 }
 
-// Stylesheet for consistent styling
+// Styles
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    flex: 1,
   },
-  datePicker: {
-    width: '100%',
-    height: 40,
-
+  surface: {
+    margin: 10,
+    borderRadius: 8,
+    elevation: 1,
+  },
+  card: {
+    borderRadius: 8,
+  },
+  title: {
+    marginBottom: 8,
+  },
+  input: {
+    marginTop: 5,
+    marginBottom: 2,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    marginTop: 5,
+    marginBottom: 5,
+    borderRadius: 5,
+  },
+  submitButton: {
+    marginTop: 20,
+    marginBottom: 40,
+    borderRadius: 6,
   },
 });
 
