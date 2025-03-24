@@ -1,7 +1,6 @@
 import { counselorApi } from "@/src/api/counselorApi";
 import CounselorCard from "@/src/components/tab-specific/client-sessions/CounselorCard";
 import { Counselor } from "@/src/types/Counselor";
-import { CounselorProfile } from "@/src/types/CounselorProfile";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";

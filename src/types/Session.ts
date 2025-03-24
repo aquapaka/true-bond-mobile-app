@@ -1,4 +1,5 @@
 import { Counselor } from "./Counselor";
+import { UserData } from "./User";
 
 export type SessionStatus = "pending" | "confirmed" | "completed" | "canceled";
 
@@ -16,4 +17,8 @@ export interface Session {
 
 export interface SessionWithCounselor extends Session {
   counselor: Counselor | null;
+}
+
+export interface SessionWithClient extends Session {
+  client: UserData | null;
 }

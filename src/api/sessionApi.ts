@@ -1,8 +1,19 @@
-import { addDocument, getDocument, queryCollection } from "../lib/firestore";
+import {
+  addDocument,
+  getDocument,
+  queryCollection,
+  updateDocument,
+} from "../lib/firestore";
 import { Counselor } from "../types/Counselor";
 import { CounselorProfile } from "../types/CounselorProfile";
-import { Session, SessionStatus, SessionWithCounselor } from "../types/Session";
+import {
+  Session,
+  SessionStatus,
+  SessionWithClient,
+  SessionWithCounselor,
+} from "../types/Session";
 import { UserData } from "../types/User";
+import { userApi } from "./userApi";
 
 export const sessionApi = {
   createNewSession: async (
@@ -21,7 +32,7 @@ export const sessionApi = {
         scheduledAt, // Firestore will handle conversion to Timestamp
         status: "pending" as SessionStatus,
         notes,
-        sessionPrice
+        sessionPrice,
       };
 
       const createdSession = await addDocument<Session>("sessions", newSession);
@@ -58,13 +69,13 @@ export const sessionApi = {
     }
   },
 
-  getAllSessionsWithCounselorInfo: async (
+  getAllSessionsWithCounselorInfoByClientId: async (
     clientId: string
   ): Promise<SessionWithCounselor[]> => {
     try {
       // Fetch all sessions for the client
       const sessions = await queryCollection<Session>(
-        'sessions',
+        "sessions",
         "clientId",
         clientId
       );
@@ -76,7 +87,7 @@ export const sessionApi = {
 
           // Get UserData from Users collection
           const userData = await getDocument<UserData>(
-            'users',
+            "users",
             session.counselorId
           );
 
@@ -86,7 +97,7 @@ export const sessionApi = {
 
           // Get CounselorProfile from CounselorProfiles collection
           const counselorProfile = await getDocument<CounselorProfile>(
-            'counselorProfiles',
+            "counselorProfiles",
             userData.counselorProfileId
           );
 
@@ -108,6 +119,73 @@ export const sessionApi = {
     } catch (error) {
       console.error("Error fetching sessions with counselor info:", error);
       return [];
+    }
+  },
+
+  getAllSessionsWithUserDataByCounselorId: async (
+    counselorId: string
+  ): Promise<SessionWithClient[]> => {
+    try {
+      // Fetch all sessions for the counselor
+      const sessions = await queryCollection<Session>(
+        "sessions",
+        "counselorId",
+        counselorId
+      );
+
+      // Fetch and merge client details
+      const sessionsWithClient = await Promise.all(
+        sessions.map(async (session) => {
+          if (!session.clientId) return { ...session, client: null };
+
+          // Get UserData from Users collection
+          const userData = await getDocument<UserData>(
+            "users",
+            session.clientId
+          );
+
+          return { ...session, client: userData || null };
+        })
+      );
+
+      return sessionsWithClient;
+    } catch (error) {
+      console.error("Error fetching sessions with client info:", error);
+      return [];
+    }
+  },
+
+  getSessionWithClientById: async (
+    sessionId: string
+  ): Promise<SessionWithClient | null> => {
+    try {
+      // Fetch session data
+      const session = await getDocument<Session>("sessions", sessionId);
+      if (!session) return null;
+
+      // Fetch client data if clientId exists
+      let client: UserData | null = null;
+      if (session.clientId) {
+        client = await userApi.getUserDataById(session.clientId);
+      }
+
+      return { ...session, client };
+    } catch (error) {
+      console.error("Error fetching session with client info:", error);
+      return null;
+    }
+  },
+
+  updateSession: async (
+    sessionId: string,
+    partialData: Partial<Session>
+  ): Promise<void> => {
+    try {
+      await updateDocument<Session>("sessions", sessionId, partialData);
+      console.log(`Session ${sessionId} updated with:`, partialData);
+    } catch (error) {
+      console.error("Error updating session:", error);
+      throw error;
     }
   },
 };
