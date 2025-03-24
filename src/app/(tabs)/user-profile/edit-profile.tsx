@@ -6,7 +6,6 @@ import { Text } from "react-native-paper";
 export default function EditProfileScreen() {
   return (
     <ScrollView>
-      <Text>Edit Profile</Text>
       <EditProfileForm />
     </ScrollView>
   );

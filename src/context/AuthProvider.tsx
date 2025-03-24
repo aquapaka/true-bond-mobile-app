@@ -36,11 +36,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const userData = userDocSnap.data() as UserData;
           console.log("✅ User data fetched:", userData);
           setUserData(userData);
-        } else {
-          console.error(
-            "🚨 Firestore document NOT FOUND for user:",
-            firebaseUser.uid
-          );
         }
       } else {
         setUserData(null);

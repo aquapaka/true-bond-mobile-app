@@ -1,30 +1,32 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
+import { Controller, useForm } from "react-hook-form";
+import { ScrollView, StyleSheet, View } from "react-native";
 import {
   Button,
+  Card,
   HelperText,
+  Surface,
   Text,
   TextInput,
   useTheme,
-  Surface,
-  Card,
-  Title,
 } from "react-native-paper";
-import { Picker } from "@react-native-picker/picker";
-import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
-import { UserData } from "@/src/types/User";
 import { useAuth } from "@/src/context/AuthProvider";
+import { UserData } from "@/src/types/User";
 import { showNotification } from "@/src/utils/notificationUtils";
 
 import ImageUploader from "./custom/ImageUploader";
 
-import { DatePickerModal } from "react-native-paper-dates";
-import { enGB, registerTranslation } from "react-native-paper-dates";
+import {
+  DatePickerModal,
+  enGB,
+  registerTranslation,
+} from "react-native-paper-dates";
+import { router } from "expo-router";
 registerTranslation("en-GB", enGB);
-
 
 function parseFirestoreTimestamp(
   value?: { seconds: number; nanoseconds: number } | string | null
@@ -44,7 +46,7 @@ function parseFirestoreTimestamp(
   if (typeof value === "string") {
     try {
       const date = new Date(value);
-      
+
       if (!isNaN(date.getTime())) {
         return date;
       }
@@ -53,7 +55,6 @@ function parseFirestoreTimestamp(
     }
   }
 
- 
   return new Date();
 }
 
@@ -83,7 +84,7 @@ type ProfileFormData = Omit<
 >;
 
 export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
-  const { userData, updateUser } = useAuth(); 
+  const { userData, updateUser } = useAuth();
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
   const [openDatePicker, setOpenDatePicker] = useState(false);
@@ -140,12 +141,11 @@ export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
       const updatedProfile: Partial<UserData> = {
         ...formValues,
 
-        dateOfBirth: formValues.dateOfBirth.toISOString(),
+        dateOfBirth: formValues.dateOfBirth,
         updatedAt: new Date().toISOString(),
       };
 
       console.log("Updated profile data:", updatedProfile);
-
 
       await updateUser(updatedProfile);
 
@@ -155,6 +155,7 @@ export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
         "Profile updated",
         "Your profile has been successfully updated."
       );
+      router.back();
     } catch (error) {
       setLoading(false);
       showNotification("error", "Update failed", String(error));
@@ -163,21 +164,28 @@ export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
 
   return (
     <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[
+        styles.container,
+        { backgroundColor: theme.colors.background, paddingBottom: 100 },
+      ]}
       keyboardShouldPersistTaps="handled"
     >
-     
       <Surface
         style={[styles.surface, { backgroundColor: theme.colors.surface }]}
       >
-       
         <Card style={styles.card}>
           <Card.Content>
-            <Title style={[styles.title, { color: theme.colors.primary }]}>
+            <Text
+              variant="titleMedium"
+              style={[styles.title, { color: theme.colors.primary }]}
+            >
               {isEditing ? "Edit Profile" : "Create Profile"}
-            </Title>
+            </Text>
             <Text variant="bodySmall" style={{ marginBottom: 10 }}>
               ID: {userData?.id}
+            </Text>
+            <Text variant="labelLarge" style={{ marginBottom: 10 }}>
+              Role: {userData?.role}
             </Text>
 
             {/* Profile Image */}
@@ -189,7 +197,7 @@ export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
               name="profileImage"
               render={({ field: { onChange, onBlur, value } }) => (
                 <ImageUploader
-                  value={value}
+                  value={value || ""}
                   onChange={onChange}
                   onBlur={onBlur}
                 />
@@ -260,6 +268,12 @@ export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
                     selectedValue={value}
                     onValueChange={onChange}
                     onBlur={onBlur}
+                    itemStyle={{
+                      backgroundColor: theme.colors.primaryContainer,
+                      color: theme.colors.primary,
+                      fontFamily: "Taviraj-Bold",
+                      fontSize: 18,
+                    }}
                   >
                     <Picker.Item label="Single" value="Single" />
                     <Picker.Item
@@ -345,6 +359,12 @@ export function EditProfileForm({ isEditing = true }: { isEditing?: boolean }) {
                     selectedValue={value}
                     onValueChange={onChange}
                     onBlur={onBlur}
+                    itemStyle={{
+                      backgroundColor: theme.colors.primaryContainer,
+                      color: theme.colors.primary,
+                      fontFamily: "Taviraj-Bold",
+                      fontSize: 18,
+                    }}
                   >
                     <Picker.Item label="Male" value="Male" />
                     <Picker.Item label="Female" value="Female" />
