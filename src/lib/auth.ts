@@ -19,7 +19,7 @@ export async function signUp(email: string, password: string) {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
     const user = userCredential.user;
     const role: UserRole = "client"; // Fixed role
@@ -36,7 +36,7 @@ export async function signUp(email: string, password: string) {
     } else {
       console.log("📝 Creating new user document...");
       await setDoc(userRef, {
-        uid: user.uid,
+        id: user.uid,
         email,
         role,
         createdAt: new Date().toISOString(),
@@ -53,11 +53,11 @@ export async function signUp(email: string, password: string) {
           throw new Error("Invalid email format. Please check again.");
         case "auth/weak-password":
           throw new Error(
-            "Password is too weak. Please use a stronger password."
+            "Password is too weak. Please use a stronger password.",
           );
         case "auth/operation-not-allowed":
           throw new Error(
-            "Sign-up is currently disabled. Please try again later."
+            "Sign-up is currently disabled. Please try again later.",
           );
         default:
           throw new Error("Registration failed. Please try again.");
@@ -75,7 +75,7 @@ export async function signIn(email: string, password: string) {
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
     return userCredential.user;
   } catch (error) {

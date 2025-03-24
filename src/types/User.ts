@@ -29,4 +29,4 @@ export interface UserData {
   subscriptionPlan?: SubscriptionPlan;
   subscriptionExpiry?: Date; // If using a paid plan
   createdAt: Date;
-};
+}

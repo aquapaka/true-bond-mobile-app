@@ -1,18 +1,21 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { View } from "react-native";
-import { Button, Chip, HelperText, Text, TextInput } from "react-native-paper";
-import { z } from "zod";
-import ImageUploader from "./custom/ImageUploader";
-import { showNotification } from "@/src/utils/notificationUtils";
-import { addDocument } from "@/src/lib/firestore";
+import { useAuth } from "@/src/context/AuthProvider";
+import { addDocument, updateDocument } from "@/src/lib/firestore";
 import {
   BookingSlot,
   CounselorProfile,
   TimeSlot,
   Weekday,
 } from "@/src/types/CounselorProfile";
+import { UserData } from "@/src/types/User";
+import { showNotification } from "@/src/utils/notificationUtils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { router } from "expo-router";
+import React, { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { View } from "react-native";
+import { Button, Chip, HelperText, Text, TextInput } from "react-native-paper";
+import { z } from "zod";
+import ImageUploader from "./custom/ImageUploader";
 
 const weekdays: Weekday[] = [
   "Monday",
@@ -42,11 +45,17 @@ const timeSlots: TimeSlot[] = [
 ];
 
 const CounselorProfileSchema = z.object({
-  bio: z.string().min(10, "Bio must be at least 10 characters."),
+  bio: z.string().min(20, "Bio must be at least 20 characters."),
+  experienceDetails: z
+    .string()
+    .min(30, "Experience Details must be at least 30 characters."),
   expertise: z.string().min(3, "Expertise is required."),
   experienceYears: z.coerce
     .number()
     .min(1, "Must have at least 1 year of experience."),
+  educationDetails: z
+    .string()
+    .min(30, "Education Details must be at least 30 characters."),
   sessionPrice: z.coerce.number().min(0, "Price must be a positive number."),
   certificateImageUrl: z.string().min(1, "Certificate is required."),
   availability: z.array(
@@ -55,7 +64,7 @@ const CounselorProfileSchema = z.object({
       slots: z
         .array(z.string())
         .min(1, "At least one time slot must be selected."),
-    })
+    }),
   ),
 });
 
@@ -79,11 +88,14 @@ const CounselorProfileForm = () => {
       sessionPrice: 2,
       certificateImageUrl: "",
       availability: [],
+      educationDetails: "",
+      experienceDetails: "",
     },
   });
+  const { userData } = useAuth();
 
   const [selectedDays, setSelectedDays] = useState<Record<string, string[]>>(
-    {}
+    {},
   );
 
   const toggleDay = (day: string) => {
@@ -112,16 +124,27 @@ const CounselorProfileForm = () => {
   };
 
   async function onSubmit(data: CounselorProfileFormData) {
+    if (!userData) {
+      showNotification("error", "Error!", "Userdata have not loaded");
+      return;
+    }
+
     try {
       const addedProfile = await addDocument<CounselorProfile>(
         "counselorProfiles",
         {
           ...data,
+          userId: userData.id,
           availability: data.availability as BookingSlot[],
           rating: 5,
           status: "applying",
-        }
+        },
       );
+
+      // Update userdata counselorProfileId
+      await updateDocument<UserData>("users", userData.id, {
+        counselorProfileId: addedProfile.id,
+      });
 
       // Reset form after successful
       if (addedProfile) {
@@ -129,8 +152,9 @@ const CounselorProfileForm = () => {
         showNotification(
           "success",
           "Your information has been sent!",
-          "It will be process within 2 days"
+          "It will be process within 2 days",
         );
+        router.back();
       }
     } catch (error) {
       showNotification("error", "Error!", String(error));
@@ -146,6 +170,8 @@ const CounselorProfileForm = () => {
         render={({ field }) => (
           <TextInput
             label="Bio"
+            multiline
+            numberOfLines={3}
             mode="outlined"
             placeholder="Enter your bio..."
             onChangeText={field.onChange}
@@ -191,6 +217,46 @@ const CounselorProfileForm = () => {
       />
       <HelperText type="error" visible={!!errors.experienceYears}>
         {errors.experienceYears?.message}
+      </HelperText>
+
+      {/* experienceDetails */}
+      <Controller
+        control={control}
+        name="experienceDetails"
+        render={({ field }) => (
+          <TextInput
+            label="Experience Details"
+            multiline
+            numberOfLines={3}
+            mode="outlined"
+            placeholder="Enter your experience..."
+            onChangeText={field.onChange}
+            value={field.value}
+          />
+        )}
+      />
+      <HelperText type="error" visible={!!errors.experienceDetails}>
+        {errors.experienceDetails?.message}
+      </HelperText>
+
+      {/* experienceDetails */}
+      <Controller
+        control={control}
+        name="educationDetails"
+        render={({ field }) => (
+          <TextInput
+            label="Education Details"
+            multiline
+            numberOfLines={3}
+            mode="outlined"
+            placeholder="Enter your education..."
+            onChangeText={field.onChange}
+            value={field.value}
+          />
+        )}
+      />
+      <HelperText type="error" visible={!!errors.educationDetails}>
+        {errors.educationDetails?.message}
       </HelperText>
 
       {/* Session Price */}
@@ -286,7 +352,7 @@ const CounselorProfileForm = () => {
               day,
               slots,
             })),
-          })
+          }),
         )}
         disabled={isSubmitting}
         style={{ marginTop: 20 }}

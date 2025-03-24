@@ -16,7 +16,7 @@ import { deleteObject } from "firebase/storage";
  */
 export const uploadImage = async (
   uri: string,
-  path: string
+  path: string,
 ): Promise<string> => {
   try {
     const storage = getStorage();
@@ -34,7 +34,7 @@ export const uploadImage = async (
       const manipulatedImage = await ImageManipulator.manipulateAsync(
         uri,
         [{ resize: { width: 800 } }], // Resize to 800px width
-        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG },
       );
       fileUri = manipulatedImage.uri;
     }
