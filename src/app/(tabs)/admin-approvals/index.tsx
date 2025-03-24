@@ -49,7 +49,7 @@ export default function AdminApprovalsScreen() {
 
   return (
     <FlatList
-      data={counselors}
+      data={counselors.sort()}
       keyExtractor={(counselor) => counselor.id}
       style={styles.container}
       renderItem={({ item: counselor }) => (
@@ -98,7 +98,7 @@ export default function AdminApprovalsScreen() {
                   {counselor.name} application
                 </Text>
                 <Text variant="bodySmall" style={styles.text}>
-                  Bio: {counselor.bio}
+                  Bio: {counselor.bio.substring(0, 60)}...
                 </Text>
                 <Text variant="bodySmall" style={styles.text}>
                   Expertise: {counselor.expertise}
