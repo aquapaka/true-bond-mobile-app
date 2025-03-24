@@ -17,26 +17,26 @@ export default function TabLayout() {
 
   useEffect(() => {
     // TODO: apply authentication
-    console.log("🛠 TabLayout useAuth() Update → User:", user);
-    if (user === undefined) return; // Prevent early unnecessary execution
-    setIsChecking(true); // Start checking
-    if (!user) {
-      if (!currentPath.startsWith("/(auth)")) {
-        console.log("🚪 Redirecting to login...");
-        setTimeout(() => {
-          router.replace("/(auth)/login");
-          setIsChecking(false);
-        }, 1);
-      }
-    } else {
-      if (!currentPath.startsWith("/(tabs)")) {
-        console.log("🏠 Redirecting to home...");
-        setTimeout(() => {
-          router.replace("/(tabs)");
-          setIsChecking(false);
-        }, 1);
-      }
-    }
+    // console.log("🛠 TabLayout useAuth() Update → User:", user);
+    // if (user === undefined) return; // Prevent early unnecessary execution
+    // setIsChecking(true); // Start checking
+    // if (!user) {
+    //   if (!currentPath.startsWith("/(auth)")) {
+    //     console.log("🚪 Redirecting to login...");
+    //     setTimeout(() => {
+    //       router.replace("/(auth)/login");
+    //       setIsChecking(false);
+    //     }, 1);
+    //   }
+    // } else {
+    //   if (!currentPath.startsWith("/(tabs)")) {
+    //     console.log("🏠 Redirecting to home...");
+    //     setTimeout(() => {
+    //       router.replace("/(tabs)");
+    //       setIsChecking(false);
+    //     }, 1);
+    //   }
+    // }
   }, [user]);
 
   if (loading || !user || !userData) return null;

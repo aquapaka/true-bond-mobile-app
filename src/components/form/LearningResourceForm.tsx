@@ -18,12 +18,6 @@ import {
 import { z } from "zod";
 import ImageUploader from "./custom/ImageUploader";
 
-const categories: LearningResourceCategory[] = [
-  "communication",
-  "finances",
-  "conflict_resolution",
-];
-
 type LearningResourceFormData = Omit<
   LearningResource,
   "id" | "createdAt" | "updatedAt"
@@ -35,12 +29,7 @@ const LearningResourceSchema = z.object({
   imageUrl: z.string().min(1, "Image Url is required."),
   author: z.string().min(1, "Author is required."),
   authorImageUrl: z.string().min(1, "Author image is required."),
-  category: z.enum(
-    categories as [LearningResourceCategory, ...LearningResourceCategory[]],
-    {
-      message: "Invalid category.",
-    },
-  ),
+  category: z.string().min(1, "Category is required."),
 });
 
 const defaultValues: LearningResourceFormData = {
@@ -74,7 +63,7 @@ export function LearningResourceForm({
       } else {
         const addedLearningResource = await addDocument<LearningResource>(
           "learningresources",
-          data,
+          data
         );
         // Reset form after successful
         if (addedLearningResource) {
@@ -82,7 +71,7 @@ export function LearningResourceForm({
           showNotification(
             "success",
             "Successfully added!",
-            "Learning Resource has been added",
+            "Learning Resource has been added"
           );
         }
       }

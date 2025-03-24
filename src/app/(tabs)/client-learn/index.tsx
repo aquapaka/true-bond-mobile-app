@@ -70,7 +70,7 @@ export default function ClientLearnScreen() {
               >
                 <Image
                   source={{ uri: item.imageUrl }}
-                  style={{ width: 110, height: 120, borderRadius: 6 }}
+                  style={{ width: 90, height: 90, borderRadius: 6 }}
                 />
                 <View
                   style={{
@@ -87,11 +87,11 @@ export default function ClientLearnScreen() {
                     }}
                   >
                     <Image
-                      source={{ uri: item.imageUrl }}
+                      source={{ uri: item.authorImageUrl }}
                       style={{ width: 24, height: 24, borderRadius: 100 }}
                     />
                     <Text variant="titleSmall" style={{ flex: 1 }}>
-                      {item.title}
+                      {item.author}
                     </Text>
                     <Text
                       variant="bodySmall"

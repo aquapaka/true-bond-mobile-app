@@ -4,7 +4,8 @@ import { getReadingTime } from "@/src/utils/generalUtils";
 import { showNotification } from "@/src/utils/notificationUtils";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, ScrollView, View } from "react-native";
+import { ActivityIndicator, Image, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import { Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
