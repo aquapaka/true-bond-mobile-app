@@ -1,3 +1,5 @@
+import { Counselor } from "./Counselor";
+
 export type SessionStatus = "pending" | "confirmed" | "completed" | "canceled";
 
 export interface Session {
@@ -7,5 +9,11 @@ export interface Session {
   meetLink: string; // Google Meet URL
   scheduledAt: Date;
   status: SessionStatus;
+  sessionPrice: number;
   notes: string;
+  createdAt: Date;
+}
+
+export interface SessionWithCounselor extends Session {
+  counselor: Counselor | null;
 }

@@ -33,10 +33,7 @@ export default function ScheduleNewSessionScreen() {
             padding: 16,
           }}
         >
-          <Text variant="titleSmall">Upcoming sessions</Text>
-          {counselors.map((counselor) => (
-            <></>
-          ))}
+          <Text variant="titleSmall">Find a counselor</Text>
         </Surface>
         <Button mode="contained" onPress={() => null}>
           Schedule New Session
