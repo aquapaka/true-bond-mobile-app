@@ -1,68 +1,116 @@
+import { counselorApi } from "@/src/api/counselorApi";
+import { TruebondLightTheme } from "@/src/theme/theme";
+import { Counselor } from "@/src/types/Counselor";
+import { showNotification } from "@/src/utils/notificationUtils";
+import { useNavigation } from "@react-navigation/native";
+import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
   FlatList,
   Image,
   StyleSheet,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { getCollection } from "@/src/lib/firestore";
-import { CounselorProfile } from "@/src/types/CounselorProfile";
-import { showNotification } from "@/src/utils/notificationUtils";
-import { useNavigation } from "@react-navigation/native";
-import { Link } from "expo-router";
+import { Badge, Surface, Text, useTheme } from "react-native-paper";
 
 export default function AdminApprovalsScreen() {
-  const [list, setList] = useState<CounselorProfile[]>([]);
+  const theme = useTheme();
+  const [counselors, setCounselors] = useState<Counselor[]>([]);
   const navigation = useNavigation();
 
   useEffect(() => {
     const fetchProfileList = async () => {
       try {
-        const result =
-          await getCollection<CounselorProfile>("counselorProfiles");
-        setList(result);
+        const result = await counselorApi.getAllCounselors();
+        setCounselors(result);
       } catch (error) {
         showNotification("error", "Error!", String(error));
       }
     };
+
     fetchProfileList();
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Counselor Approval List</Text>
-
-      <FlatList
-        data={list}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Link href={`/(tabs)/admin-approvals/detail/${item.id}`} asChild>
-            <TouchableOpacity style={styles.card}>
-              <Image
-                source={{ uri: item.certificateImageUrl }}
-                style={styles.image}
-              />
+    <FlatList
+      data={counselors}
+      keyExtractor={(counselor) => counselor.id}
+      style={styles.container}
+      renderItem={({ item: counselor }) => (
+        <Link href={`/(tabs)/admin-approvals/detail/${counselor.id}`} asChild>
+          <TouchableOpacity>
+            <Surface style={styles.card}>
+              <View
+                style={{
+                  flex: 2,
+                  gap: 8,
+                }}
+              >
+                <Image
+                  source={{ uri: counselor.profileImage }}
+                  style={[
+                    styles.image,
+                    { backgroundColor: theme.colors.primary },
+                  ]}
+                />
+                <Badge
+                  style={{
+                    width: "100%",
+                    backgroundColor:
+                      counselor.status === "approved"
+                        ? TruebondLightTheme.colors.success
+                        : counselor.status === "applying"
+                          ? TruebondLightTheme.colors.warning
+                          : TruebondLightTheme.colors.error,
+                    paddingHorizontal: 12,
+                  }}
+                >
+                  {counselor.status}
+                </Badge>
+              </View>
 
               <View style={styles.infoContainer}>
-                <Text style={styles.name}>{item.expertise}</Text>
-                <Text style={styles.text}>Rating: {item.rating} ⭐</Text>
-                <Text style={styles.text}>Status: {item.status}</Text>
-                <Text style={styles.detailsText}>View Details →</Text>
+                <Text
+                  variant="labelMedium"
+                  style={[
+                    styles.name,
+                    {
+                      color: theme.colors.primary,
+                    },
+                  ]}
+                >
+                  {counselor.name} application
+                </Text>
+                <Text variant="bodySmall" style={styles.text}>
+                  Bio: {counselor.bio}
+                </Text>
+                <Text variant="bodySmall" style={styles.text}>
+                  Expertise: {counselor.expertise}
+                </Text>
+                <Text variant="bodySmall" style={styles.text}>
+                  Years of experience: {counselor.experienceYears}
+                </Text>
+                <Text
+                  variant="labelSmall"
+                  style={{
+                    marginTop: 8,
+                    color: theme.colors.tertiary,
+                  }}
+                >
+                  View Details →
+                </Text>
               </View>
-            </TouchableOpacity>
-          </Link>
-        )}
-      />
-    </View>
+            </Surface>
+          </TouchableOpacity>
+        </Link>
+      )}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
     padding: 10,
   },
   header: {
@@ -73,25 +121,19 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: "row",
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 10,
+    padding: 12,
+    borderRadius: 12,
     marginBottom: 10,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
+    gap: 8,
   },
   image: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    aspectRatio: 1,
+    width: "100%",
+    borderRadius: 10,
     marginRight: 15,
   },
   infoContainer: {
-    flex: 1,
+    flex: 7,
   },
   name: {
     fontSize: 16,
@@ -101,10 +143,5 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     color: "#555",
-  },
-  detailsText: {
-    fontSize: 14,
-    color: "#007bff",
-    marginTop: 5,
   },
 });

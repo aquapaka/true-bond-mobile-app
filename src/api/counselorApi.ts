@@ -20,12 +20,38 @@ export const counselorApi = {
     return { ...user, ...profile };
   },
 
+  getAllAplliedCounselors: async (): Promise<Counselor[]> => {
+    // Fetch all users
+    const users = await getCollection<UserData>("users");
+
+    // Filter users who are counselors (have `counselorProfileId`)
+    const counselorUsers = users.filter(
+      (user) => user.role === "counselor" && user.counselorProfileId
+    );
+
+    // Fetch all counselor profiles
+    const profiles = await getCollection<CounselorProfile>("counselorProfiles");
+
+    // Create a Map for quick lookup by `counselorProfileId`
+    const profileMap = new Map(
+      profiles.map((profile) => [profile.id, profile])
+    );
+
+    // Merge UserData with their corresponding CounselorProfile
+    return counselorUsers
+      .map((user) => {
+        const profile = profileMap.get(user.counselorProfileId!);
+        return profile ? { ...user, ...profile } : null;
+      })
+      .filter((counselor): counselor is Counselor => counselor !== null);
+  },
+
   getAllCounselors: async (): Promise<Counselor[]> => {
     // Fetch all users
     const users = await getCollection<UserData>("users");
 
     // Filter users who are counselors (have `counselorProfileId`)
-    const counselorUsers = users.filter((user) => user.role === 'counselor' && user.counselorProfileId);
+    const counselorUsers = users.filter((user) => user.counselorProfileId);
 
     // Fetch all counselor profiles
     const profiles = await getCollection<CounselorProfile>("counselorProfiles");
