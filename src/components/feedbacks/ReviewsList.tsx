@@ -20,7 +20,6 @@ export default function ReviewsList({ reviews }: { reviews: Review[] }) {
               size={32}
               source={{ uri: review.clientProfileImage }}
             />
-            <Avatar.Text size={32} label={review.clientName.substring(0, 2)} />
             <Text variant="labelLarge" style={{ fontWeight: "bold" }}>
               {review.clientName}
             </Text>

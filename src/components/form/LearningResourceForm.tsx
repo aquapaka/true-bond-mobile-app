@@ -1,11 +1,7 @@
 import { addDocument } from "@/src/lib/firestore";
-import {
-  LearningResource,
-  LearningResourceCategory,
-} from "@/src/types/LearningResource";
+import { LearningResource } from "@/src/types/LearningResource";
 import { showNotification } from "@/src/utils/notificationUtils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FirebaseError } from "firebase/app";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 import {
@@ -18,12 +14,6 @@ import {
 import { z } from "zod";
 import ImageUploader from "./custom/ImageUploader";
 
-const categories: LearningResourceCategory[] = [
-  "communication",
-  "finances",
-  "conflict_resolution",
-];
-
 type LearningResourceFormData = Omit<
   LearningResource,
   "id" | "createdAt" | "updatedAt"
@@ -35,20 +25,16 @@ const LearningResourceSchema = z.object({
   imageUrl: z.string().min(1, "Image Url is required."),
   author: z.string().min(1, "Author is required."),
   authorImageUrl: z.string().min(1, "Author image is required."),
-  category: z.enum(
-    categories as [LearningResourceCategory, ...LearningResourceCategory[]],
-    {
-      message: "Invalid category.",
-    },
-  ),
+  category: z.string().min(1, "Category is required."),
 });
 
 const defaultValues: LearningResourceFormData = {
   title: "",
   content: "",
   imageUrl: "",
-  author: "",
-  authorImageUrl: "",
+  author: "True Bond",
+  authorImageUrl:
+    "https://img.freepik.com/free-vector/red-calligraphy-heart-2_78370-5897.jpg?semt=ais_hybrid",
   category: "communication", // Default category
 };
 
@@ -74,7 +60,7 @@ export function LearningResourceForm({
       } else {
         const addedLearningResource = await addDocument<LearningResource>(
           "learningresources",
-          data,
+          data
         );
         // Reset form after successful
         if (addedLearningResource) {
@@ -82,7 +68,7 @@ export function LearningResourceForm({
           showNotification(
             "success",
             "Successfully added!",
-            "Learning Resource has been added",
+            "Learning Resource has been added"
           );
         }
       }
@@ -117,6 +103,7 @@ export function LearningResourceForm({
           <TextInput
             mode="outlined"
             label="Content"
+            multiline
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -156,7 +143,7 @@ export function LearningResourceForm({
         {errors.imageUrl?.message}
       </HelperText>
 
-      <Controller
+      {/* <Controller
         control={control}
         name="author"
         render={({ field: { onChange, onBlur, value } }) => (
@@ -183,19 +170,10 @@ export function LearningResourceForm({
       />
       <HelperText type="error" visible={!!errors.authorImageUrl}>
         {errors.authorImageUrl?.message}
-      </HelperText>
+      </HelperText> */}
 
       <Button mode="contained" onPress={handleSubmit(onSubmit)}>
         {isEditing ? "Update Resource" : "Create Resource"}
-      </Button>
-
-      <Button
-        mode="contained-tonal"
-        onPress={() => {
-          showNotification("success", "Demo", "This is demo description");
-        }}
-      >
-        {"Demo Notification"}
       </Button>
     </View>
   );

@@ -80,7 +80,6 @@ export async function signIn(email: string, password: string) {
     return userCredential.user;
   } catch (error) {
     // Handle Firebase Authentication errors
-    console.error(error);
     if (error instanceof FirebaseError) {
       switch (error.code) {
         case "auth/user-not-found":

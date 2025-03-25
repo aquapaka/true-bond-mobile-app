@@ -1,40 +1,36 @@
 import { HapticTab } from "@/src/components/HapticTab";
 import { useAuth } from "@/src/context/AuthProvider";
-import { UserRole } from "@/src/types/User";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { router, Tabs } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { router, Tabs, usePathname } from "expo-router";
+import React, { useEffect } from "react";
 import { Platform } from "react-native";
 
 export default function TabLayout() {
   const { user, loading, userData, signOut } = useAuth();
-  const [isChecking, setIsChecking] = useState(true);
-  const [firstTime, setFirstTime] = useState<boolean | null>(null); // used for onboarding showing
-
-  // Change this while development to show tab based on role, will be replaced by user.role after;
-  const testRole: UserRole = "admin";
+  const currentPath = usePathname();
 
   useEffect(() => {
-    // TODO: apply authentication
+    // // TODO: apply authentication
     console.log("🛠 TabLayout useAuth() Update → User:", user);
     if (user === undefined) return; // Prevent early unnecessary execution
-    setIsChecking(true); // Start checking
     if (!user) {
-      console.log("🚪 Redirecting to login...");
-      setTimeout(() => {
-        router.replace("/(auth)/login");
-        setIsChecking(false);
-      }, 1);
+      if (!currentPath.startsWith("/(auth)")) {
+        console.log("🚪 Redirecting to login...");
+        setTimeout(() => {
+          router.replace("/(auth)/login");
+        }, 1);
+      }
     } else {
-      console.log("🏠 Redirecting to home...");
-      setTimeout(() => {
-        router.replace("/(tabs)/client-sessions");
-        setIsChecking(false);
-      }, 1);
+      if (!currentPath.startsWith("/(tabs)")) {
+        console.log("🏠 Redirecting to home...");
+        setTimeout(() => {
+          router.replace("/(tabs)");
+        }, 1);
+      }
     }
   }, [user]);
 
-  if (loading || !user || !userData) return null;
+  if (loading || !user || !userData || !userData) return null;
 
   return (
     <Tabs
@@ -69,17 +65,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="calendar" size={size} color={color} />
           ),
-          href: true || testRole === "client" ? "/client-sessions" : null,
-        }}
-      />
-      <Tabs.Screen
-        name="client-learn"
-        options={{
-          title: "Learn",
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="book-open-page-variant" size={size} color={color} />
-          ),
-          href: true || testRole === "client" ? "/client-learn" : null,
+          href: userData?.role === "client" ? "/client-sessions" : null,
         }}
       />
 
@@ -91,17 +77,17 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="calendar" size={size} color={color} />
           ),
-          href: true || testRole === "counselor" ? "/counselor-sessions" : null,
+          href: userData?.role === "counselor" ? "/counselor-sessions" : null,
         }}
       />
       <Tabs.Screen
-        name="counselor-clients"
+        name="client-learn"
         options={{
-          title: "Clients",
+          title: "Learn",
           tabBarIcon: ({ color, size }) => (
-            <Icon name="account-multiple" size={size} color={color} />
+            <Icon name="book-open-page-variant" size={size} color={color} />
           ),
-          href: true || testRole === "counselor" ? "/counselor-clients" : null,
+          href: "/client-learn",
         }}
       />
 
@@ -113,7 +99,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="home-analytics" size={size} color={color} />
           ),
-          href: true || testRole === "admin" ? "/admin-dashboard" : null,
+          href: userData?.role === "admin" ? "/(tabs)/admin-dashboard" : null,
         }}
       />
       <Tabs.Screen
@@ -123,7 +109,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="folder-cog" size={size} color={color} />
           ),
-          href: true || testRole === "admin" ? "/admin-management" : null,
+          href: userData?.role === "admin" ? "/admin-management" : null,
         }}
       />
       <Tabs.Screen
@@ -133,7 +119,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="account-multiple-check" size={size} color={color} />
           ),
-          href: true || testRole === "admin" ? "/admin-approvals" : null,
+          href: userData?.role === "admin" ? "/admin-approvals" : null,
         }}
       />
 

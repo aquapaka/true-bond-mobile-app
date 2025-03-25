@@ -12,7 +12,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Badge, Surface, Text, useTheme } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Badge,
+  Surface,
+  Text,
+  useTheme,
+} from "react-native-paper";
 
 export default function AdminApprovalsScreen() {
   const theme = useTheme();
@@ -31,14 +37,22 @@ export default function AdminApprovalsScreen() {
       };
 
       fetchProfileList();
-    }, []),
+    }, [])
   );
+
+  if (!counselors)
+    return (
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
 
   return (
     <FlatList
-      data={counselors}
+      data={counselors.sort()}
       keyExtractor={(counselor) => counselor.id}
       style={styles.container}
+      contentContainerStyle={{ paddingBottom: 100 }}
       renderItem={({ item: counselor }) => (
         <Link href={`/(tabs)/admin-approvals/detail/${counselor.id}`} asChild>
           <TouchableOpacity>
@@ -85,7 +99,7 @@ export default function AdminApprovalsScreen() {
                   {counselor.name} application
                 </Text>
                 <Text variant="bodySmall" style={styles.text}>
-                  Bio: {counselor.bio}
+                  Bio: {counselor.bio.substring(0, 60)}...
                 </Text>
                 <Text variant="bodySmall" style={styles.text}>
                   Expertise: {counselor.expertise}

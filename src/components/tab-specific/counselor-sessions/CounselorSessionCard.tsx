@@ -3,7 +3,6 @@ import { SessionWithClient } from "@/src/types/Session";
 import { formatDate, formatRelativeDate } from "@/src/utils/formatUtils";
 import { showNotification } from "@/src/utils/notificationUtils";
 import { router } from "expo-router";
-import { useEffect } from "react";
 import { Image, Linking, TouchableOpacity, View } from "react-native";
 import { Badge, Button, Surface, Text, useTheme } from "react-native-paper";
 
@@ -14,16 +13,12 @@ export default function CounselorSessionCard({
 }) {
   const theme = useTheme();
 
-  useEffect(() => {
-    console.log(session);
-  }, []);
-
   return (
     <TouchableOpacity
       onPress={() =>
         router.navigate(
           // @ts-ignore
-          `/(tabs)/counselor-sessions/session-details/${session.id}`,
+          `/(tabs)/counselor-sessions/session-details/${session.id}`
         )
       }
     >
@@ -92,7 +87,7 @@ export default function CounselorSessionCard({
                     showNotification(
                       "error",
                       "Error",
-                      "Cannot open meet link URL",
+                      "Cannot open meet link URL"
                     );
                   }
                 }}

@@ -177,26 +177,33 @@ export default function DetailProfile() {
           </View>
         </View>
 
-        <Divider />
+        {counselor.status !== "approved" && counselor.status !== "declined" && (
+          <>
+            <Divider />
 
-        <View style={styles.buttonContainer}>
-          <Button
-            style={{ flex: 1, backgroundColor: theme.colors.errorContainer }}
-            onPress={() => handleDecline()}
-          >
-            Decline
-          </Button>
-          <Button
-            mode="contained"
-            style={{
-              flex: 1,
-              backgroundColor: TruebondLightTheme.colors.success,
-            }}
-            onPress={() => handleApprove()}
-          >
-            Approve
-          </Button>
-        </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                style={{
+                  flex: 1,
+                  backgroundColor: theme.colors.errorContainer,
+                }}
+                onPress={() => handleDecline()}
+              >
+                Decline
+              </Button>
+              <Button
+                mode="contained"
+                style={{
+                  flex: 1,
+                  backgroundColor: TruebondLightTheme.colors.success,
+                }}
+                onPress={() => handleApprove()}
+              >
+                Approve
+              </Button>
+            </View>
+          </>
+        )}
       </Surface>
     </ScrollView>
   );

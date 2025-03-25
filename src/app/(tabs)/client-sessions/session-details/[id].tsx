@@ -1,13 +1,14 @@
 import { sessionApi } from "@/src/api/sessionApi";
 import { ClientDetailProfile } from "@/src/components/tab-specific/counselor-sessions/ClientDetailProfile";
+import { CounselorDetailProfile } from "@/src/components/tab-specific/schedule-counselor/CounselorDetailProfile";
 import { TruebondLightTheme } from "@/src/theme/theme";
-import { SessionWithClient } from "@/src/types/Session";
+import { SessionWithClient, SessionWithCounselor } from "@/src/types/Session";
 import { formatDate } from "@/src/utils/formatUtils";
 import { showNotification } from "@/src/utils/notificationUtils";
 import { isValidLink } from "@/src/utils/validationUtils";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Clipboard from "expo-clipboard";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -29,39 +30,8 @@ import {
 export default function SessionsDetailScreen() {
   const { id } = useLocalSearchParams();
   const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState<SessionWithClient | null>(null);
-  const [meetingLink, setMeetingLink] = useState<string>("");
-  const [meetingLinkError, setMeetingLinkError] = useState<boolean>(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const showModal = () => {
-    setMeetingLink(session?.meetLink ? session?.meetLink : "");
-    setModalVisible(true);
-  };
-  const hideModal = () => {
-    setMeetingLinkError(false);
-    setModalVisible(false);
-  };
+  const [session, setSession] = useState<SessionWithCounselor | null>(null);
   const theme = useTheme();
-
-  async function handleSaveMeetLink() {
-    if (!session) return;
-
-    if (!isValidLink(meetingLink)) {
-      setMeetingLinkError(true);
-      return;
-    }
-
-    sessionApi.updateSession(session?.id, {
-      meetLink: meetingLink,
-    });
-    showNotification(
-      "success",
-      "Update success",
-      "Meeting Link has been updated"
-    );
-    setSession({ ...session, meetLink: meetingLink });
-    hideModal();
-  }
 
   async function handleConfirm() {
     if (!session) return;
@@ -70,7 +40,6 @@ export default function SessionsDetailScreen() {
       status: "confirmed",
     });
     showNotification("success", "Confirm success", "");
-    router.back();
   }
 
   async function handleCancel() {
@@ -85,9 +54,12 @@ export default function SessionsDetailScreen() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await sessionApi.getSessionWithClientById(id as string);
+        const result = await sessionApi.getSessionWithCounselorById(
+          id as string
+        );
         setSession(result);
-        setMeetingLink(result?.meetLink ? result?.meetLink : "");
+        console.log(result);
+
       } catch (error) {
         showNotification("error", "Error!", String(error));
       } finally {
@@ -106,7 +78,7 @@ export default function SessionsDetailScreen() {
     );
   }
 
-  if (!session) {
+  if (!session || !session.counselor) {
     return (
       <View style={{ flex: 1, justifyContent: "center" }}>
         <Text>Can't find information about client</Text>
@@ -177,36 +149,6 @@ export default function SessionsDetailScreen() {
               {session.meetLink ? session.meetLink : "Set new meeting link..."}
             </Text>
 
-            {/* Edit meet link modal */}
-            <Portal>
-              <Modal
-                visible={modalVisible}
-                onDismiss={hideModal}
-                contentContainerStyle={{
-                  backgroundColor: theme.colors.surface,
-                  padding: 20,
-                  margin: 20,
-                  borderRadius: 12,
-                }}
-              >
-                <Text variant="labelLarge" style={{ marginBottom: 8 }}>
-                  Edit meeting link
-                </Text>
-                <TextInput
-                  label="Meet link"
-                  value={meetingLink}
-                  mode="outlined"
-                  onChangeText={(text) => setMeetingLink(text)}
-                />
-                <HelperText type="error" visible={meetingLinkError}>
-                  Please enter a valid link
-                </HelperText>
-                <Button mode="contained" onPress={() => handleSaveMeetLink()}>
-                  Save
-                </Button>
-              </Modal>
-            </Portal>
-
             {session.meetLink && (
               <IconButton
                 mode="contained"
@@ -223,52 +165,11 @@ export default function SessionsDetailScreen() {
                 }}
               />
             )}
-            <IconButton
-              mode="contained"
-              icon="pencil"
-              iconColor={theme.colors.primary}
-              size={20}
-              onPress={async () => showModal()}
-            />
           </View>
         </Surface>
         {/*  */}
-        <ClientDetailProfile client={session.client!} />
+        <CounselorDetailProfile counselor={session.counselor} />
 
-        {session.status === "pending" && (
-          <Surface style={{ padding: 12, borderRadius: 12, gap: 8 }}>
-            {/*  */}
-            <View style={{ flexDirection: "row", gap: 6 }}>
-              <Icon name="check" size={20} />
-              <Text variant="titleMedium">Action</Text>
-            </View>
-            <View style={{ flexDirection: "row", gap: 8 }}>
-              <Button
-                style={{
-                  flex: 1,
-                  backgroundColor: theme.colors.errorContainer,
-                }}
-                onPress={() => handleCancel()}
-              >
-                Cancel
-              </Button>
-              <Button
-                mode="contained"
-                disabled={!session.meetLink}
-                style={{
-                  flex: 1,
-                  backgroundColor: TruebondLightTheme.colors.success,
-                }}
-                onPress={() => handleConfirm()}
-              >
-                Confirm
-              </Button>
-            </View>
-            <HelperText type="error" visible={!session.meetLink}>
-              Meet link must be set before you can confirm
-            </HelperText>
-          </Surface>
-        )}
       </View>
     </ScrollView>
   );
