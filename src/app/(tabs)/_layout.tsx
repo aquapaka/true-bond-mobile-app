@@ -68,16 +68,6 @@ export default function TabLayout() {
           href: true || userData?.role === "client" ? "/client-sessions" : null,
         }}
       />
-      <Tabs.Screen
-        name="client-learn"
-        options={{
-          title: "Learn",
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="book-open-page-variant" size={size} color={color} />
-          ),
-          href: true || userData?.role === "client" ? "/client-learn" : null,
-        }}
-      />
 
       {/* Counselor tabs */}
       <Tabs.Screen
@@ -94,16 +84,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="counselor-clients"
+        name="client-learn"
         options={{
-          title: "Clients",
+          title: "Learn",
           tabBarIcon: ({ color, size }) => (
-            <Icon name="account-multiple" size={size} color={color} />
+            <Icon name="book-open-page-variant" size={size} color={color} />
           ),
-          href:
-            true || userData?.role === "counselor"
-              ? "/counselor-clients"
-              : null,
+          href: "/client-learn",
         }}
       />
 
