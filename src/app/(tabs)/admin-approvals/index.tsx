@@ -52,6 +52,7 @@ export default function AdminApprovalsScreen() {
       data={counselors.sort()}
       keyExtractor={(counselor) => counselor.id}
       style={styles.container}
+      contentContainerStyle={{ paddingBottom: 100 }}
       renderItem={({ item: counselor }) => (
         <Link href={`/(tabs)/admin-approvals/detail/${counselor.id}`} asChild>
           <TouchableOpacity>
