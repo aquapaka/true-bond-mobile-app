@@ -7,7 +7,7 @@ import { showNotification } from "@/src/utils/notificationUtils";
 import { isValidLink } from "@/src/utils/validationUtils";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Clipboard from "expo-clipboard";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -57,7 +57,7 @@ export default function SessionsDetailScreen() {
     showNotification(
       "success",
       "Update success",
-      "Meeting Link has been updated",
+      "Meeting Link has been updated"
     );
     setSession({ ...session, meetLink: meetingLink });
     hideModal();
@@ -70,6 +70,7 @@ export default function SessionsDetailScreen() {
       status: "confirmed",
     });
     showNotification("success", "Confirm success", "");
+    router.back();
   }
 
   async function handleCancel() {
@@ -217,7 +218,7 @@ export default function SessionsDetailScreen() {
                   showNotification(
                     "info",
                     "Meet link has been copied into clipboard",
-                    "",
+                    ""
                   );
                 }}
               />
