@@ -1,7 +1,7 @@
 import { HapticTab } from "@/src/components/HapticTab";
 import { useAuth } from "@/src/context/AuthProvider";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { Tabs, usePathname } from "expo-router";
+import { router, Tabs, usePathname } from "expo-router";
 import React, { useEffect } from "react";
 import { Platform } from "react-native";
 
@@ -10,7 +10,7 @@ export default function TabLayout() {
   const currentPath = usePathname();
 
   useEffect(() => {
-    // // TODO: apply authentication
+    // TODO: apply authentication
     // console.log("🛠 TabLayout useAuth() Update → User:", user);
     // if (user === undefined) return; // Prevent early unnecessary execution
     // if (!user) {

@@ -12,6 +12,10 @@ export default function ClientSessionLayout() {
         name="schedule-counselor/[id]"
         options={{ title: "Schedule" }}
       />
+      <Stack.Screen
+        name="session-details/[id]"
+        options={{ title: "Details" }}
+      />
     </Stack>
   );
 }
