@@ -111,55 +111,57 @@ export default function ClientHome() {
       >
         <Text variant="titleMedium">For you</Text>
         {learningResources.slice(0, 3).map((item) => (
-          <>
-            <Link href={`/(tabs)/client-learn/blog-detail/${item.id}`} asChild>
-              <TouchableOpacity>
-                <Surface
-                  mode="flat"
+          <Link
+            key={item.id}
+            href={`/(tabs)/client-learn/blog-detail/${item.id}`}
+            asChild
+          >
+            <TouchableOpacity>
+              <Surface
+                mode="flat"
+                style={{
+                  borderRadius: 12,
+                  flexDirection: "row",
+                  padding: 12,
+                  gap: 12,
+                }}
+              >
+                <Image
+                  source={{ uri: item.imageUrl }}
+                  style={{ width: 90, height: 90, borderRadius: 6 }}
+                />
+                <View
                   style={{
-                    borderRadius: 12,
-                    flexDirection: "row",
-                    padding: 12,
-                    gap: 12,
+                    justifyContent: "space-between",
+                    flex: 1,
                   }}
                 >
-                  <Image
-                    source={{ uri: item.imageUrl }}
-                    style={{ width: 90, height: 90, borderRadius: 6 }}
-                  />
+                  <Text variant="headlineSmall">{item.title}</Text>
                   <View
                     style={{
-                      justifyContent: "space-between",
-                      flex: 1,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 4,
                     }}
                   >
-                    <Text variant="headlineSmall">{item.title}</Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 4,
-                      }}
+                    <Image
+                      source={{ uri: item.authorImageUrl }}
+                      style={{ width: 24, height: 24, borderRadius: 100 }}
+                    />
+                    <Text variant="titleSmall" style={{ flex: 1 }}>
+                      {item.author}
+                    </Text>
+                    <Text
+                      variant="bodySmall"
+                      style={{ color: theme.colors.tertiary }}
                     >
-                      <Image
-                        source={{ uri: item.authorImageUrl }}
-                        style={{ width: 24, height: 24, borderRadius: 100 }}
-                      />
-                      <Text variant="titleSmall" style={{ flex: 1 }}>
-                        {item.author}
-                      </Text>
-                      <Text
-                        variant="bodySmall"
-                        style={{ color: theme.colors.tertiary }}
-                      >
-                        {getReadingTime(item.content)}
-                      </Text>
-                    </View>
+                      {getReadingTime(item.content)}
+                    </Text>
                   </View>
-                </Surface>
-              </TouchableOpacity>
-            </Link>
-          </>
+                </View>
+              </Surface>
+            </TouchableOpacity>
+          </Link>
         ))}
       </Surface>
     </View>
