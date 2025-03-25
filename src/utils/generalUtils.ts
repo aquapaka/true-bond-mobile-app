@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export const getReadingTime = (content: string): string => {
   const wordsPerMinute = 200; // Average reading speed
   const wordCount = content.trim().split(/\s+/).length;
@@ -31,4 +33,18 @@ export function timeAgo(date: Date) {
   }
 
   return "just now";
+}
+
+export function hasTimePassed(
+  timestamp: Timestamp | string | number | Date
+): boolean {
+  let targetTime: number;
+
+  if (timestamp instanceof Timestamp) {
+    targetTime = timestamp.toMillis(); // Convert Firebase Timestamp to milliseconds
+  } else {
+    targetTime = new Date(timestamp).getTime(); // Convert other types to milliseconds
+  }
+
+  return Date.now() > targetTime;
 }

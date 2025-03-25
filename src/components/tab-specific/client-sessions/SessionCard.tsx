@@ -1,11 +1,26 @@
+import { useAuth } from "@/src/context/AuthProvider";
 import { TruebondLightTheme } from "@/src/theme/theme";
+import { Review } from "@/src/types/Review";
 import { SessionWithCounselor } from "@/src/types/Session";
 import { formatDate, formatRelativeDate } from "@/src/utils/formatUtils";
 import { showNotification } from "@/src/utils/notificationUtils";
 import { router } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Image, Linking, TouchableOpacity, View } from "react-native";
-import { Badge, Button, Surface, Text, useTheme } from "react-native-paper";
+import {
+  Badge,
+  Button,
+  Modal,
+  Portal,
+  Surface,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
+import { RatingSelector } from "../../form/custom/RatingSelector";
+import { reviewApi } from "@/src/api/reviewApi";
+import { sessionApi } from "@/src/api/sessionApi";
+import { hasTimePassed } from "@/src/utils/generalUtils";
 
 export default function SessionCard({
   session,
@@ -13,10 +28,40 @@ export default function SessionCard({
   session: SessionWithCounselor;
 }) {
   const theme = useTheme();
+  const { userData } = useAuth();
+  const [review, setReview] = useState<Omit<Review, "id" | "createdAt">>({
+    clientName: "Anonymous",
+    clientProfileImage: "",
+    counselorId: session.counselor?.id!,
+    rating: 5,
+    sessionId: session.id,
+    comment: "",
+  });
+  const [modalVisible, setModalVisible] = useState(false);
+  const showModal = () => {
+    setModalVisible(true);
+  };
+  const hideModal = () => {
+    setModalVisible(false);
+  };
+
+  async function handleCompleteSession() {
+    console.log(review);
+    await reviewApi.addReview(review);
+    await sessionApi.updateSession(session.id, { status: "completed" });
+    showNotification("success", "Complete", "Thank you for your feedback");
+    hideModal();
+  }
 
   useEffect(() => {
-    console.log(session);
-  }, []);
+    if (userData) {
+      setReview((prev) => ({
+        ...prev,
+        clientName: userData.name,
+        clientProfileImage: userData.profileImage,
+      }));
+    }
+  }, [userData]);
 
   return (
     <TouchableOpacity
@@ -102,6 +147,49 @@ export default function SessionCard({
             </View>
           )}
         </View>
+
+        {/* Modal */}
+        <Portal>
+          <Modal
+            visible={modalVisible}
+            onDismiss={hideModal}
+            contentContainerStyle={{
+              backgroundColor: theme.colors.surface,
+              padding: 20,
+              margin: 20,
+              borderRadius: 12,
+              gap: 12,
+            }}
+          >
+            <Text variant="labelLarge" style={{ marginBottom: 8 }}>
+              Write a review for {session.counselor?.name}
+            </Text>
+            <RatingSelector
+              onChange={(rating) =>
+                setReview((prev) => ({ ...prev, rating: rating }))
+              }
+              value={review.rating}
+            />
+            <TextInput
+              label="Comment"
+              multiline
+              value={review.comment}
+              mode="outlined"
+              onChangeText={(text) =>
+                setReview((prev) => ({ ...prev, comment: text }))
+              }
+            />
+            <Button mode="contained" onPress={() => handleCompleteSession()}>
+              Give review
+            </Button>
+          </Modal>
+        </Portal>
+        {session.status === "confirmed" &&
+          hasTimePassed(session.scheduledAt) && (
+            <View>
+              <Button onPress={() => showModal()}>Mark as complete</Button>
+            </View>
+          )}
       </Surface>
     </TouchableOpacity>
   );
