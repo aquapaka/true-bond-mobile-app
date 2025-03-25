@@ -1,15 +1,15 @@
 import { adminApi } from "@/src/api/adminApi";
 import { useAuth } from "@/src/context/AuthProvider";
+import { TruebondLightTheme } from "@/src/theme/theme";
 import { AdminStats } from "@/src/types/AdminStats";
-import { formatDate, formatShortDate } from "@/src/utils/formatUtils";
+import { formatDate } from "@/src/utils/formatUtils";
 import { showNotification } from "@/src/utils/notificationUtils";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, Touchable, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { ActivityIndicator, Divider, Surface, Text } from "react-native-paper";
-import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { TruebondLightTheme } from "@/src/theme/theme";
-import { router } from "expo-router";
 
 export default function AdminDashboardScreen() {
   const { userData } = useAuth();

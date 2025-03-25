@@ -15,12 +15,11 @@ import { Surface, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ClientLearnScreen() {
+  const theme = useTheme();
   const [learningResources, setLearningResources] = useState<
     LearningResource[]
   >([]);
-  const navigation = useNavigation();
   const [loading, setLoading] = useState<boolean>(true);
-  const theme = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,6 +55,7 @@ export default function ClientLearnScreen() {
         contentContainerStyle={{
           padding: 12,
           gap: 12,
+          paddingBottom: 100,
         }}
         renderItem={({ item }) => (
           <Link href={`/(tabs)/client-learn/blog-detail/${item.id}`} asChild>
