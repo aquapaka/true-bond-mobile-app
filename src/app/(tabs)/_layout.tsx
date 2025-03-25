@@ -1,7 +1,7 @@
 import { HapticTab } from "@/src/components/HapticTab";
 import { useAuth } from "@/src/context/AuthProvider";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { Tabs, usePathname } from "expo-router";
+import { router, Tabs, usePathname } from "expo-router";
 import React, { useEffect } from "react";
 import { Platform } from "react-native";
 
@@ -11,23 +11,23 @@ export default function TabLayout() {
 
   useEffect(() => {
     // // TODO: apply authentication
-    // console.log("🛠 TabLayout useAuth() Update → User:", user);
-    // if (user === undefined) return; // Prevent early unnecessary execution
-    // if (!user) {
-    //   if (!currentPath.startsWith("/(auth)")) {
-    //     console.log("🚪 Redirecting to login...");
-    //     setTimeout(() => {
-    //       router.replace("/(auth)/login");
-    //     }, 1);
-    //   }
-    // } else {
-    //   if (!currentPath.startsWith("/(tabs)")) {
-    //     console.log("🏠 Redirecting to home...");
-    //     setTimeout(() => {
-    //       router.replace("/(tabs)");
-    //     }, 1);
-    //   }
-    // }
+    console.log("🛠 TabLayout useAuth() Update → User:", user);
+    if (user === undefined) return; // Prevent early unnecessary execution
+    if (!user) {
+      if (!currentPath.startsWith("/(auth)")) {
+        console.log("🚪 Redirecting to login...");
+        setTimeout(() => {
+          router.replace("/(auth)/login");
+        }, 1);
+      }
+    } else {
+      if (!currentPath.startsWith("/(tabs)")) {
+        console.log("🏠 Redirecting to home...");
+        setTimeout(() => {
+          router.replace("/(tabs)");
+        }, 1);
+      }
+    }
   }, [user]);
 
   if (loading || !user || !userData || !userData) return null;
@@ -65,7 +65,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="calendar" size={size} color={color} />
           ),
-          href: true || userData?.role === "client" ? "/client-sessions" : null,
+          href: userData?.role === "client" ? "/client-sessions" : null,
         }}
       />
 
@@ -77,10 +77,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="calendar" size={size} color={color} />
           ),
-          href:
-            true || userData?.role === "counselor"
-              ? "/counselor-sessions"
-              : null,
+          href: userData?.role === "counselor" ? "/counselor-sessions" : null,
         }}
       />
       <Tabs.Screen
@@ -102,10 +99,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="home-analytics" size={size} color={color} />
           ),
-          href:
-            true || userData?.role === "admin"
-              ? "/(tabs)/admin-dashboard"
-              : null,
+          href: userData?.role === "admin" ? "/(tabs)/admin-dashboard" : null,
         }}
       />
       <Tabs.Screen
@@ -115,7 +109,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="folder-cog" size={size} color={color} />
           ),
-          href: true || userData?.role === "admin" ? "/admin-management" : null,
+          href: userData?.role === "admin" ? "/admin-management" : null,
         }}
       />
       <Tabs.Screen
@@ -125,7 +119,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Icon name="account-multiple-check" size={size} color={color} />
           ),
-          href: true || userData?.role === "admin" ? "/admin-approvals" : null,
+          href: userData?.role === "admin" ? "/admin-approvals" : null,
         }}
       />
 

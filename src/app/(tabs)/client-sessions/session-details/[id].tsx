@@ -170,40 +170,6 @@ export default function SessionsDetailScreen() {
         {/*  */}
         <CounselorDetailProfile counselor={session.counselor} />
 
-        {session.status === "pending" && (
-          <Surface style={{ padding: 12, borderRadius: 12, gap: 8 }}>
-            {/*  */}
-            <View style={{ flexDirection: "row", gap: 6 }}>
-              <Icon name="check" size={20} />
-              <Text variant="titleMedium">Action</Text>
-            </View>
-            <View style={{ flexDirection: "row", gap: 8 }}>
-              <Button
-                style={{
-                  flex: 1,
-                  backgroundColor: theme.colors.errorContainer,
-                }}
-                onPress={() => handleCancel()}
-              >
-                Cancel
-              </Button>
-              <Button
-                mode="contained"
-                disabled={!session.meetLink}
-                style={{
-                  flex: 1,
-                  backgroundColor: TruebondLightTheme.colors.success,
-                }}
-                onPress={() => handleConfirm()}
-              >
-                Confirm
-              </Button>
-            </View>
-            <HelperText type="error" visible={!session.meetLink}>
-              Meet link must be set before you can confirm
-            </HelperText>
-          </Surface>
-        )}
       </View>
     </ScrollView>
   );
